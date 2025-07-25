@@ -33,14 +33,14 @@ Download the Expo Go app on your mobile device:
 
 1. **Fork the repository:**
 
-   - Go to [https://github.com/Builder-s-League/builders-native-upro](https://github.com/Builder-s-League/builders-native-upro)
+   - Go to [https://github.com/Builder-s-League/upro-mobile](https://github.com/Builder-s-League/builders-native-upro)
    - Click the "Fork" button in the top-right corner
    - This creates a copy of the repository in your GitHub account
 
 2. **Clone your forked repository:**
 
    ```bash
-   git clone https://github.com/YOUR-USERNAME/builders-native-upro.git
+   git clone https://github.com/YOUR-USERNAME/upro-mobile.git
    cd builders-native-upro
    ```
 
@@ -82,7 +82,7 @@ Download the Expo Go app on your mobile device:
 1. **Setup schema**
 
    In your supabase project:
-   
+
    - On the left side bar open `SQL Editor`
    - Click new SQL Snippet
    - Paste the contents of the [schema](https://raw.githubusercontent.com/BuildersLeague/upro-web/refs/heads/main/supabase_schema.sql)
@@ -91,7 +91,7 @@ Download the Expo Go app on your mobile device:
 2. **Setup database sample data**
 
    In your supabase project:
-   
+
    - On the left side bar open `SQL Editor`
    - Click new SQL Snippet (or click the new tab button near the `Tab Title`)
    - Paste the contents of the [seed file](https://raw.githubusercontent.com/BuildersLeague/upro-web/refs/heads/main/seed_data.sql)

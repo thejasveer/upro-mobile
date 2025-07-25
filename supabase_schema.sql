@@ -15,9 +15,9 @@ CREATE TABLE subscription_types (
     type TEXT NOT NULL UNIQUE
 );
 
-INSERT INTO subscription_types (type) VALUES
-('freemium'),
-('premium');
+INSERT INTO subscription_types (id, type) VALUES
+(1, 'freemium'),
+(2, 'premium');
 
 -- Items users can buy
 CREATE TABLE store_items (

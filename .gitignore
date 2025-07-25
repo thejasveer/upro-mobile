@@ -78,7 +78,7 @@ web_modules/
 .next
 out
 
-.expo
+.expo/
 
 # Nuxt.js build / generate output
 .nuxt

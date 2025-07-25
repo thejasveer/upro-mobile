@@ -17,7 +17,7 @@ Follow these steps to get the app running on your device:
 
 ### 📋 Prerequisites
 
-- Node.js (v18 or higher)
+- [Node.js 18.0 or later](https://nodejs.org/en/download)
 - npm or yarn
 - A smartphone (iOS or Android) with internet connection
 - Supabase account
@@ -76,6 +76,26 @@ Download the Expo Go app on your mobile device:
 2. Copy the following values:
    - **Project URL** (looks like: `https://your-project-id.supabase.co`)
    - **anon public** key (the long string under "Project API keys")
+
+#### 3.3 Database Setup
+
+1. **Setup schema**
+
+   In your supabase project:
+   
+   - On the left side bar open `SQL Editor`
+   - Click new SQL Snippet
+   - Paste the contents of the [schema](https://raw.githubusercontent.com/BuildersLeague/upro-web/refs/heads/main/supabase_schema.sql)
+   - Click run at the bottom right
+
+2. **Setup database sample data**
+
+   In your supabase project:
+   
+   - On the left side bar open `SQL Editor`
+   - Click new SQL Snippet (or click the new tab button near the `Tab Title`)
+   - Paste the contents of the [seed file](https://raw.githubusercontent.com/BuildersLeague/upro-web/refs/heads/main/seed_data.sql)
+   - Click run at the bottom right
 
 ### 🔧 Step 4: Configure Environment Variables
 

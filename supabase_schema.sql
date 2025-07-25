@@ -15,6 +15,10 @@ CREATE TABLE subscription_types (
     type TEXT NOT NULL UNIQUE
 );
 
+INSERT INTO subscription_types (type) VALUES
+('freemium'),
+('premium');
+
 -- Items users can buy
 CREATE TABLE store_items (
     id SERIAL PRIMARY KEY,
@@ -37,7 +41,7 @@ CREATE TABLE users (
     dominant_foot BOOLEAN, -- true == right foot, false == left foot
     playing_position TEXT, -- 'Forward', 'Midfielder', 'Defender', 'Goalkeeper' etc
     experience_total FLOAT DEFAULT 0.0 NOT NULL,
-    subscription_type INTEGER NOT NULL,
+    subscription_type INTEGER DEFAULT 1 NOT NULL,
     upro_gold FLOAT DEFAULT 0.0 NOT NULL,
     profile_picture TEXT, -- put url here?
     equipped_avatar_id INT, -- The profiles 3d avatar

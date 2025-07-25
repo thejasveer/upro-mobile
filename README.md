@@ -4,7 +4,7 @@ A modern React Native mobile application built with Expo, featuring Supabase aut
 
 ## 🌟 Features
 
-- ✅ User Authentication (Sign In, Sign Up, Password Reset)
+- ✅ User Authentication (Sign In, Password Reset)
 - ✅ Responsive UI with NativeWind (Tailwind CSS for React Native)
 - ✅ Supabase Backend Integration
 - ✅ Expo Router for Navigation

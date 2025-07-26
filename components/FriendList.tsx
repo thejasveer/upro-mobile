@@ -1,9 +1,9 @@
 import useFetch from "@/hooks/useFetch";
 import { Account, User } from "@/interfaces/interfaces";
 import { supabase } from "@/lib/supabase";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { getInitials } from "@/lib/utils";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 
 async function getFriends(userId: number, requestedCols: string | null = null) {
   // 1) grab all accepted friendships where this user is either requester or addressee
@@ -56,7 +56,11 @@ export default function FriendList({
   }
 
   if (!friends || friends.length === 0) {
-    return null;
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-lg">No Friends</Text>
+      </View>
+    );
   }
 
   return (

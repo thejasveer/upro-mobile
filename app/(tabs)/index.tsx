@@ -1,13 +1,24 @@
 import AuthScreen from "@/components/AuthScreen";
 import TopNavbar from "@/components/TopNavBar";
 import { useAuth } from "@/contexts/AuthContext";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import React from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 export default function HomeScreen() {
-  const { user, account, loading } = useAuth();
+  const { user, account, loading, signOut } = useAuth();
+
+  // React.useEffect(() => {
+  //   signOut()
+  //     .then(() => {
+  //       console.log("User signed out successfully.");
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error signing out:", error);
+  //     });
+  // }, []);
 
   if (loading) {
     return (

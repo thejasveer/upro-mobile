@@ -33,14 +33,14 @@ Download the Expo Go app on your mobile device:
 
 1. **Fork the repository:**
 
-   - Go to [https://github.com/Builder-s-League/builders-native-upro](https://github.com/Builder-s-League/builders-native-upro)
+   - Go to [https://github.com/Builder-s-League/upro-mobile](https://github.com/Builder-s-League/builders-native-upro)
    - Click the "Fork" button in the top-right corner
    - This creates a copy of the repository in your GitHub account
 
 2. **Clone your forked repository:**
 
    ```bash
-   git clone https://github.com/YOUR-USERNAME/builders-native-upro.git
+   git clone https://github.com/YOUR-USERNAME/upro-mobile.git
    cd builders-native-upro
    ```
 

@@ -32,7 +32,7 @@ export default function HomeScreen() {
             {user.email}
           </Text>
         </View>
-        
+
         <Text className="text-center text-gray-500 text-sm">
           Check out the Profile tab to manage your account
         </Text>

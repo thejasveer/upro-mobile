@@ -1,10 +1,10 @@
 import AuthScreen from "@/components/AuthScreen";
 import TopNavbar from "@/components/TopNavBar";
 import { useAuth } from "@/contexts/AuthContext";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 export default function HomeScreen() {
   const { user, loading } = useAuth();

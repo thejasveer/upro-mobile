@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Slot, Tabs } from "expo-router";
 import React from "react";
 import { Platform, View } from "react-native";
 
@@ -9,6 +9,8 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthScreen from "@/components/AuthScreen";
+import { SafeAreaView } from "react-native-safe-area-context";
+import TopNavbar from "@/components/TopNavBar";
 
 type IconName = React.ComponentProps<typeof IconSymbol>["name"];
 

@@ -53,6 +53,8 @@ Download the Expo Go app on your mobile device:
 
 ### 🗄️ Step 3: Setup Supabase Backend
 
+> 📋 **Quick Setup**: Check out our detailed [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) guide (recommended if you want to use CLI, if not the setup below works fine)
+
 #### 3.1 Create Supabase Account
 
 1. Go to [supabase.com](https://supabase.com)

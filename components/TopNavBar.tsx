@@ -7,10 +7,8 @@ import {
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import FriendList from "./FriendList";
-import { Account } from "@/interfaces/interfaces";
 
-const TopNavbar = ({ account }: { account: Account }) => {
+const TopNavbar = () => {
   const [isFriendMenuVisible, setIsFriendMenuVisible] = useState(false);
   const slideAnimation = useRef(new Animated.Value(0)).current; // Animation state
 
@@ -25,7 +23,7 @@ const TopNavbar = ({ account }: { account: Account }) => {
 
   const slideInterpolation = slideAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: [400, 0],
+    outputRange: [200, 0],
   });
 
   return (
@@ -42,9 +40,9 @@ const TopNavbar = ({ account }: { account: Account }) => {
       {/* expandable friend menu view */}
       <Animated.View
         style={[{ transform: [{ translateX: slideInterpolation }] }]}
-        className="absolute right-1 left-1 top-0 bg-gray-50 shadow-lg w-max max-w-[400px] h-screen-safe z-50  rounded-2xl"
+        className="absolute right-0 top-14 bg-black w-56 h-screen z-50 justify-center items-center rounded-2xl"
       >
-        <FriendList account={account} toggleFriendMenu={toggleFriendMenu} />
+        <Text className="text-white">Hi!</Text>
       </Animated.View>
       <TouchableOpacity
         onPress={toggleFriendMenu}

@@ -8,7 +8,7 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  const { user, account, loading, signOut } = useAuth();
+  const { user, account, loading, signOut, currentProfile } = useAuth();
 
   // React.useEffect(() => {
   //   signOut()
@@ -43,17 +43,23 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <TopNavbar account={account} />
+      <TopNavbar />
       <View className="flex-1 items-center px-6">
         <View className=" flex items-center justify-center w-[80%] h-[60%] mt-20">
           <View className="flex-row justify-between items-center w-full mb-6">
             <View className="flex-row items-center">
-              <MaterialCommunityIcons
-                name="currency-usd"
-                size={24}
-                color="black"
-              />
-              <Text className="text-lg font-semibold italic">Balance</Text>
+              <Text className="text-lg font-semibold italic">
+                {currentProfile?.name}{" "}
+              </Text>
+              <Text className="text-lg font-semibold italic">
+                <MaterialCommunityIcons
+                  name="crown"
+                  size={20}
+                  color="gold"
+                  style={{ marginLeft: 5 }}
+                />
+                {currentProfile?.upro_gold}{" "}
+              </Text>
             </View>
             <TouchableOpacity className="flex-row items-center gap-1">
               <FontAwesome5 name="user-friends" size={24} color="black" />

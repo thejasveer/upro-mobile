@@ -1,9 +1,10 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Platform } from "react-native";
 
 import AuthScreen from "@/components/AuthScreen";
 import { HapticTab } from "@/components/HapticTab";
+import { Profiles } from "@/components/Profiles";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
@@ -30,8 +31,8 @@ const navigations: NavItem[] = [
   //   icon: "paperplane.fill",
   // },
   {
-    name: "training",
-    title: "Training",
+    name: "trainings",
+    title: "Trainings",
     icon: "figure.walk",
   },
   {
@@ -54,11 +55,17 @@ const navigations: NavItem[] = [
 export default function TabLayout() {
   const { user } = useAuth();
   const colorScheme = useColorScheme();
+  const { profiles, currentProfile, setCurrentProfile } = useAuth();
+  useEffect(() => {
+    // setCurrentProfile(null);
+  }, [profiles, currentProfile]);
 
   if (!user) {
     return <AuthScreen />;
   }
-  return (
+  return profiles.length > 0 && currentProfile == null ? (
+    <Profiles />
+  ) : (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,

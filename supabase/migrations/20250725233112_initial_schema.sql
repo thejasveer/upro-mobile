@@ -101,9 +101,33 @@ CREATE TABLE training_sessions (
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     experience_reward FLOAT NOT NULL DEFAULT 0.0,
-    duration_minutes INTEGER,
+    duration INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT positive_xp CHECK (experience_reward >= 0.0)
+);
+
+CREATE TYPE diff AS ENUM (
+  'easy',
+  'medium', 
+  'hard'
+);
+
+CREATE TABLE exercises (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    experience_reward FLOAT NOT NULL DEFAULT 0.0,
+    difficulty diff,
+    duration INTEGER,
+    CONSTRAINT positive_xp CHECK (experience_reward >= 0.0)
+);
+
+CREATE TABLE training_sessions_and_exercises (
+    training_session_id INTEGER,
+    exercises_id INTEGER,
+    FOREIGN KEY (training_session_id) REFERENCES training_sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY (exercises_id) REFERENCES exercises(id) ON DELETE CASCADE,
+    UNIQUE(training_session_id, exercises_id)
 );
 
 -- How the user did for some training session

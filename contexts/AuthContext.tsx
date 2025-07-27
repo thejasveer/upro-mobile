@@ -1,4 +1,3 @@
-import { supabase } from "@/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import {
   createContext,
@@ -7,6 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { supabase } from "../lib/supabase";
 
 export type Account = {
   id: string;
@@ -151,7 +151,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email,
       password,
       options: {
-        data: { firstName, lastName },
+        data: { first_name: firstName, last_name: lastName },
       },
     });
     if (error) throw error;

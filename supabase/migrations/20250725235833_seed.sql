@@ -43,6 +43,32 @@ INSERT INTO badges (xp_amount, name, description) VALUES
 (50000, 'Master', 'Reach 50,000 XP - true mastery of the game'),
 (100000, 'Champion', 'Ultimate achievement: 100,000 XP');
 
+-- Training Sessions (Soccer drills, skill tutorials, game tactics)
+INSERT INTO training_sessions (title, description, experience_reward, duration_minutes) VALUES
+-- Basic Skills
+('Ball Control Basics', 'Learn fundamental ball control techniques with stationary ball exercises', 25.0, 15),
+('First Touch Training', 'Improve your first touch with various receiving exercises', 30.0, 20),
+('Passing Accuracy', 'Practice short and medium range passing with precision', 35.0, 25),
+('Shooting Fundamentals', 'Master basic shooting technique and accuracy', 40.0, 30),
+
+-- Intermediate Skills  
+('Dribbling Moves', 'Learn essential dribbling moves to beat defenders', 45.0, 25),
+('Crossing and Finishing', 'Practice crossing from wide positions and finishing in the box', 50.0, 35),
+('Defensive Positioning', 'Learn proper defensive stance and positioning', 40.0, 30),
+('Goalkeeper Basics', 'Fundamental goalkeeper training - catching, diving, distribution', 55.0, 40),
+
+-- Advanced Skills
+('Advanced Ball Mastery', 'Complex ball control exercises for advanced players', 60.0, 45),
+('Tactical Awareness', 'Understanding field positioning and game reading', 65.0, 50),
+('Set Piece Specialist', 'Master free kicks, corners, and penalty techniques', 70.0, 40),
+('Speed and Agility', 'High-intensity training for pace and quick direction changes', 55.0, 35),
+
+-- Team Tactics
+('Formation Play', 'Learn different formations and their applications', 75.0, 60),
+('Counter Attack', 'Master the art of quick counter-attacking football', 70.0, 50),
+('Possession Football', 'Practice maintaining possession and patient build-up play', 80.0, 55),
+('Pressing and High Line', 'Advanced defensive tactics - coordinated pressing', 85.0, 65);
+
 -- Sample Clubs
 INSERT INTO clubs (name, description) VALUES
 ('Barcelona Academy', 'Elite youth development program focused on technical skills and tactical understanding'),
@@ -57,50 +83,3 @@ INSERT INTO clubs (name, description) VALUES
 -- Note: User data will be created when users sign up through the application
 -- The accounts table will be populated automatically via the trigger when auth.users are created
 -- Users, training results, friendships, etc. will be generated through app usage 
-
--- Training Sessions (Groupings of exercises or tutorials)
-INSERT INTO training_sessions (title, description, experience_reward, duration) VALUES
-('Basic Skills Module', 'Fundamental soccer skills for beginners', 130.0, 90),
-('Intermediate Skill Module', 'Drills and training for intermediate level players', 185.0, 130),
-('Advanced Training Series', 'Advanced skills, tactics, and speed training', 250.0, 170),
-('Team Tactical Module', 'Team-based strategies and tactical drills', 310.0, 230);
-
--- Exercises (Individual drills or tutorials)
-INSERT INTO exercises (title, description, experience_reward, difficulty, duration) VALUES
--- Basic
-('Ball Control Basics', 'Learn fundamental ball control techniques with stationary ball exercises', 25.0, 'easy', 15),
-('First Touch Training', 'Improve your first touch with various receiving exercises', 30.0, 'easy', 20),
-('Passing Accuracy', 'Practice short and medium range passing with precision', 35.0, 'easy', 25),
-('Shooting Fundamentals', 'Master basic shooting technique and accuracy', 40.0, 'easy', 30),
-
--- Intermediate
-('Dribbling Moves', 'Learn essential dribbling moves to beat defenders', 45.0, 'medium', 25),
-('Crossing and Finishing', 'Practice crossing from wide positions and finishing in the box', 50.0, 'medium', 35),
-('Defensive Positioning', 'Learn proper defensive stance and positioning', 40.0, 'medium', 30),
-('Goalkeeper Basics', 'Fundamental goalkeeper training - catching, diving, distribution', 55.0, 'medium', 40),
-
--- Advanced
-('Advanced Ball Mastery', 'Complex ball control exercises for advanced players', 60.0, 'hard', 45),
-('Tactical Awareness', 'Understanding field positioning and game reading', 65.0, 'hard', 50),
-('Set Piece Specialist', 'Master free kicks, corners, and penalty techniques', 70.0, 'hard', 40),
-('Speed and Agility', 'High-intensity training for pace and quick direction changes', 55.0, 'hard', 35),
-
--- Team Tactics
-('Formation Play', 'Learn different formations and their applications', 75.0, 'hard', 60),
-('Counter Attack', 'Master the art of quick counter-attacking football', 70.0, 'hard', 50),
-('Possession Football', 'Practice maintaining possession and patient build-up play', 80.0, 'hard', 55),
-('Pressing and High Line', 'Advanced defensive tactics - coordinated pressing', 85.0, 'hard', 65);
-
--- Relationship between sessions and exercises
--- Basic Module
-INSERT INTO training_sessions_and_exercises (training_session_id, exercises_id) VALUES
-(1, 1), (1, 2), (1, 3), (1, 4),
-
--- Intermediate Module
-(2, 5), (2, 6), (2, 7), (2, 8),
-
--- Advanced Training
-(3, 9), (3, 10), (3, 11), (3, 12),
-
--- Tactical Module
-(4, 13), (4, 14), (4, 15), (4, 16);

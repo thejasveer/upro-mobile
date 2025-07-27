@@ -2,12 +2,13 @@ import AuthScreen from "@/components/AuthScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import React from "react";
+import { useRouter } from "expo-router";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const { user, account, loading, signOut, currentProfile } = useAuth();
+  const router = useRouter();
 
   // React.useEffect(() => {
   //   signOut()
@@ -87,6 +88,16 @@ export default function HomeScreen() {
             <Text className="text-white font-bold">share</Text>
           </TouchableOpacity>
         </View>
+      </View>
+
+      {/* Daily Training Button */}
+      <View className="px-6 mb-6">
+        <TouchableOpacity 
+          className="bg-green-500 py-4 rounded-lg items-center shadow-sm"
+          onPress={() => router.push("/daily")}
+        >
+          <Text className="text-white font-bold text-lg">Daily Training</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Statistics Cards Grid */}

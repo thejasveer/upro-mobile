@@ -28,6 +28,7 @@ export type Profile = {
   upro_gold: number;
   dominant_foot: string;
   playing_position: string;
+  experience_total: number;
   created_at: string;
   subscription_type: number;
   profile_picture: string | null;

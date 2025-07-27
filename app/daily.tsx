@@ -8,8 +8,9 @@ import {
     ScrollView,
     Text,
     TouchableOpacity,
-    View,
+    View
 } from "react-native";
+import { WebView } from "react-native-webview";
 
 export default function DailyTraining() {
   const router = useRouter();
@@ -24,10 +25,23 @@ export default function DailyTraining() {
       const firstVideo = getFirstVideo();
       console.log("📱 Daily Training - setting selected video:", firstVideo);
       setSelectedVideo(firstVideo);
-    } else {
-      console.log("📱 Daily Training - no videos available, selectedVideo remains:", selectedVideo);
     }
-  }, [videos]);
+  }, [videos, loading]);
+
+  const extractYouTubeVideoId = (url: string) => {
+    if (!url) return null;
+    
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    const videoId = match ? match[1] : null;
+    
+    console.log("🔗 Extracted YouTube video ID:", { url, videoId });
+    return videoId;
+  };
+
+  const getYouTubeEmbedUrl = (videoId: string) => {
+    return `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1&rel=0&showinfo=0&autohide=1&playsinline=1&iv_load_policy=3&disablekb=1&color=white&theme=dark`;
+  };
 
   const renderDifficultyBadges = (difficulty: number) => {
     const badges = [];
@@ -50,20 +64,6 @@ export default function DailyTraining() {
     return badges;
   };
 
-  const extractYouTubeVideoId = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    const videoId = (match && match[2].length === 11) ? match[2] : null;
-    console.log("🔗 Extracted YouTube video ID:", { url, videoId });
-    return videoId;
-  };
-
-  const getYouTubeThumbnail = (videoId: string) => {
-    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-    console.log("🖼️ YouTube thumbnail URL:", thumbnailUrl);
-    return thumbnailUrl;
-  };
-
   console.log("📱 Daily Training - current selectedVideo:", selectedVideo);
 
   return (
@@ -82,14 +82,19 @@ export default function DailyTraining() {
         <View className="m-4 bg-white rounded-lg shadow-sm">
           {/* Video Preview */}
           <View className="relative">
-            <View className="w-full h-48 bg-gray-200 rounded-t-lg items-center justify-center">
+            <View className="w-full h-48 bg-gray-200 rounded-t-lg overflow-hidden">
               {selectedVideo && selectedVideo.url ? (
-                <Image
-                  source={{ 
-                    uri: getYouTubeThumbnail(extractYouTubeVideoId(selectedVideo.url) || '') 
-                  }}
-                  className="w-full h-full rounded-t-lg"
-                  resizeMode="cover"
+                <WebView
+                  style={{ flex: 1 }}
+                  javaScriptEnabled={true}
+                  domStorageEnabled={true}
+                  source={{ uri: getYouTubeEmbedUrl(extractYouTubeVideoId(selectedVideo.url) || '') }}
+                  allowsFullscreenVideo={true}
+                  mediaPlaybackRequiresUserAction={false}
+                  allowsInlineMediaPlayback={true}
+                  scalesPageToFit={false}
+                  scrollEnabled={false}
+                  bounces={false}
                 />
               ) : (
                 <Image
@@ -98,11 +103,6 @@ export default function DailyTraining() {
                   resizeMode="cover"
                 />
               )}
-              <View className="absolute inset-0 items-center justify-center">
-                <View className="w-16 h-16 bg-green-500 rounded-full items-center justify-center">
-                  <IconSymbol name="paperplane.fill" size={24} color="white" />
-                </View>
-              </View>
             </View>
           </View>
 

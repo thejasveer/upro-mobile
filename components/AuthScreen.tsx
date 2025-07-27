@@ -14,7 +14,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 type AuthMode = "signin" | "signup";
 
-const AuthScreen: React.FC = () => {
+const AuthScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");

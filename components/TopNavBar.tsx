@@ -20,7 +20,7 @@ const TopNavbar = () => {
 
   const slideInterpolation = slideAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: [300, 0],
+    outputRange: [400, 0],
   });
 
   return (

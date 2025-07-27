@@ -49,7 +49,7 @@ const TopNavbar = () => {
             <TouchableOpacity
               key={profile.id}
               onPress={() => {
-                switchProfile(profile.id);
+                switchProfile(String(profile.id));
                 toggleFriendMenu();
               }}
               className="  w-45 flex items-center justify-start "
@@ -92,9 +92,18 @@ const TopNavbar = () => {
 };
 
 export function getNameIntial(name: string): string {
-  return name
-    ? `${name.charAt(0).toUpperCase()} ${name.split(" ")[1].charAt(0).toUpperCase()}`
-    : "";
+  if (!name || typeof name !== "string") {
+    return "?";
+  }
+
+  const words = name.trim().split(" ");
+  if (words.length === 1) {
+    // Single name - just return first character
+    return words[0].charAt(0).toUpperCase();
+  } else {
+    // Multiple names - return first character of first and last word
+    return `${words[0].charAt(0).toUpperCase()}${words[words.length - 1].charAt(0).toUpperCase()}`;
+  }
 }
 
 export default TopNavbar;

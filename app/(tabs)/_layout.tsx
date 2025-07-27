@@ -30,7 +30,7 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   if (!user) return <AuthScreen />;
-  if (profiles.length > 0 && currentProfile == null) return <Profiles />;
+  if (!currentProfile) return <Profiles />;
 
   return (
     <Tabs

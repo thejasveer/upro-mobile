@@ -43,6 +43,11 @@ const AuthScreen = () => {
       } else {
         await signUp(email, password, firstName, lastName);
         Alert.alert("Success", "Check your email for the confirmation link!");
+        // Clear form fields and switch to sign-in mode
+        setFirstName("");
+        setLastName("");
+        setPassword("");
+        setMode("signin");
       }
     } catch (error: any) {
     } finally {

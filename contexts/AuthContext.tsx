@@ -51,6 +51,7 @@ type AuthContextType = {
   profiles: Profile[];
   currentProfile: Profile | null;
   setCurrentProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
+  refreshProfiles: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -91,6 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchAccount = async () => {
     if (!user) return;
+
     const { data, error } = await supabase
       .from("accounts")
       .select("*")
@@ -98,6 +100,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .single();
 
     if (error) {
+      // Handle case where account doesn't exist (database was cleaned)
+      if (error.code === "PGRST116") {
+        console.log("Account not found for authenticated user. Signing out...");
+        // Clear local state and sign out from Supabase
+        setSession(null);
+        setUser(null);
+        setAccount(null);
+        setProfiles([]);
+        setCurrentProfile(null);
+        await supabase.auth.signOut();
+        return;
+      }
+
       console.error("Error fetching account:", error.message);
       return;
     }
@@ -112,14 +127,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error fetching account:", error);
         Alert.alert("Error", "Failed to fetch account information.");
       }
+    } else {
+      // Clear all data when user is null
+      setAccount(null);
+      setProfiles([]);
+      setCurrentProfile(null);
     }
   }, [user]);
   useEffect(() => {
-    try {
-      fetchProfiles();
-    } catch (error) {
-      console.error("Error fetching profiles:", error);
-      Alert.alert("Error", "Failed to fetch profiles.");
+    if (account) {
+      try {
+        fetchProfiles();
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+        Alert.alert("Error", "Failed to fetch profiles.");
+      }
+    } else {
+      // Clear profiles when account is null
+      setProfiles([]);
+      setCurrentProfile(null);
     }
   }, [account]);
   const fetchProfiles = async () => {
@@ -136,14 +162,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setProfiles(data ?? []);
       if (data?.[0]) {
-        switchProfile(data[0].id); // Automatically set first profile
+        switchProfile(String(data[0].id)); // Convert number to string
       }
     }
   };
 
   const switchProfile = (profileId: string) => {
     console.log(profiles);
-    const profile = profiles.find((p) => p.id === profileId);
+    const profile = profiles.find((p) => String(p.id) === profileId); // Handle both string and number IDs
     if (profile) {
       setCurrentProfile(profile);
     } else {
@@ -174,8 +200,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    setSession(data.session ?? null);
-    setUser(data.user ?? null);
+    // Explicitly sign out to prevent automatic login after signup
+    await supabase.auth.signOut();
+    setSession(null);
+    setUser(null);
   };
 
   const signIn = async (email: string, password: string) => {
@@ -217,6 +245,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const refreshProfiles = async () => {
+    if (account) {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("account_id", account.id);
+
+      if (error) {
+        console.error("Error refreshing profiles:", error.message);
+        return;
+      }
+
+      setProfiles(data ?? []);
+      // Only auto-select first profile if no current profile is selected
+      if (data?.[0] && !currentProfile) {
+        switchProfile(String(data[0].id));
+      }
+    }
+  };
+
   const value: AuthContextType = {
     switchProfile,
     user,
@@ -230,6 +278,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     profiles,
     currentProfile,
     setCurrentProfile,
+    refreshProfiles,
   };
 
   return (

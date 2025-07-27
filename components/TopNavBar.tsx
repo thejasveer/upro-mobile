@@ -6,8 +6,13 @@ import { Animated, Text, TouchableOpacity, View } from "react-native";
 const TopNavbar = () => {
   const [isFriendMenuVisible, setIsFriendMenuVisible] = useState(false);
   const slideAnimation = useRef(new Animated.Value(0)).current; // Animation state
-  const { currentProfile, setCurrentProfile, profiles, switchProfile } =
-    useAuth();
+  const {
+    signOut,
+    currentProfile,
+    setCurrentProfile,
+    profiles,
+    switchProfile,
+  } = useAuth();
 
   const toggleFriendMenu = () => {
     Animated.timing(slideAnimation, {
@@ -44,7 +49,7 @@ const TopNavbar = () => {
             <TouchableOpacity
               key={profile.id}
               onPress={() => {
-                switchProfile(profile.id);
+                switchProfile(String(profile.id));
                 toggleFriendMenu();
               }}
               className="  w-45 flex items-center justify-start "
@@ -64,6 +69,14 @@ const TopNavbar = () => {
         >
           <Text className="text-green-500 font-semibold">Add new profile</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            signOut();
+          }}
+          className="bg-white p-2 rounded-full mt-2"
+        >
+          <Text className="text-red-500 font-semibold">Logout</Text>
+        </TouchableOpacity>
       </Animated.View>
       <TouchableOpacity
         onPress={toggleFriendMenu}
@@ -79,9 +92,18 @@ const TopNavbar = () => {
 };
 
 export function getNameIntial(name: string): string {
-  return name
-    ? `${name.charAt(0).toUpperCase()} ${name.split(" ")[1].charAt(0).toUpperCase()}`
-    : "";
+  if (!name || typeof name !== "string") {
+    return "?";
+  }
+
+  const words = name.trim().split(" ");
+  if (words.length === 1) {
+    // Single name - just return first character
+    return words[0].charAt(0).toUpperCase();
+  } else {
+    // Multiple names - return first character of first and last word
+    return `${words[0].charAt(0).toUpperCase()}${words[words.length - 1].charAt(0).toUpperCase()}`;
+  }
 }
 
 export default TopNavbar;

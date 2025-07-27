@@ -1,4 +1,3 @@
-import { supabase } from "@/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import {
   createContext,
@@ -7,6 +6,8 @@ import {
   useEffect,
   useState,
 } from "react";
+import { Alert } from "react-native";
+import { supabase } from "../lib/supabase";
 
 export type Account = {
   id: string;
@@ -23,10 +24,11 @@ export type Profile = {
   gender: string;
   age_group: string;
   weight: number;
-  upro_gold: number;
   height: number;
+  upro_gold: number;
   dominant_foot: string;
   playing_position: string;
+  experience_total: number;
   created_at: string;
   subscription_type: number;
   profile_picture: string | null;
@@ -50,6 +52,7 @@ type AuthContextType = {
   profiles: Profile[];
   currentProfile: Profile | null;
   setCurrentProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
+  refreshProfiles: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -63,79 +66,113 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    };
-    getSession();
+    try {
+      const getSession = async () => {
+        const { data } = await supabase.auth.getSession();
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+        setLoading(false);
+      };
+      getSession();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-      }
-    );
+      const { data: listener } = supabase.auth.onAuthStateChange(
+        (_event, session) => {
+          setSession(session);
+          setUser(session?.user ?? null);
+        }
+      );
 
-    return () => {
-      listener.subscription.unsubscribe();
-    };
+      return () => {
+        listener?.subscription?.unsubscribe();
+      };
+    } catch (error) {
+      console.error("Error in AuthProvider useEffect:", error);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    }
   }, []);
 
-  useEffect(() => {
-    const fetchAccount = async () => {
-      if (!user) return;
+  const fetchAccount = async () => {
+    if (!user) return;
 
-      const { data, error } = await supabase
-        .from("accounts")
-        .select("*")
-        .eq("auth_user_id", user.id)
-        .single();
+    const { data, error } = await supabase
+      .from("accounts")
+      .select("*")
+      .eq("auth_user_id", user.id)
+      .single();
 
-      if (error) {
-        console.error("Error fetching account:", error);
+    if (error) {
+      // Handle case where account doesn't exist (database was cleaned)
+      if (error.code === "PGRST116") {
+        console.log("Account not found for authenticated user. Signing out...");
+        // Clear local state and sign out from Supabase
+        setSession(null);
+        setUser(null);
+        setAccount(null);
+        setProfiles([]);
+        setCurrentProfile(null);
+        await supabase.auth.signOut();
         return;
       }
-      console.log("Fetched account:", data);
-      setAccount(data);
-    };
 
-    fetchAccount();
-  }, [user]);
+      console.error("Error fetching account:", error.message);
+      return;
+    }
 
+    setAccount(data);
+  };
   useEffect(() => {
-    const fetchProfiles = async () => {
-      if (!account) return;
-
+    if (user) {
+      try {
+        fetchAccount();
+      } catch (error) {
+        console.error("Error fetching account:", error);
+        Alert.alert("Error", "Failed to fetch account information.");
+      }
+    } else {
+      // Clear all data when user is null
+      setAccount(null);
+      setProfiles([]);
+      setCurrentProfile(null);
+    }
+  }, [user]);
+  useEffect(() => {
+    if (account) {
+      try {
+        fetchProfiles();
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+        Alert.alert("Error", "Failed to fetch profiles.");
+      }
+    } else {
+      // Clear profiles when account is null
+      setProfiles([]);
+      setCurrentProfile(null);
+    }
+  }, [account]);
+  const fetchProfiles = async () => {
+    if (account) {
       const { data, error } = await supabase
         .from("users")
         .select("*")
         .eq("account_id", account.id);
-      console.log("Fetching profiles for account:---------------------");
+
       if (error) {
-        console.error("Error fetching profiles:", error);
+        console.error("Error fetching profiles:", error.message);
         return;
       }
 
-      setProfiles(data || []);
-      //   setCurrentProfile(data?.[0] || null); // Set the first profile as current by default
-      switchProfile(data?.[0]?.id || ""); // Ensure current profile is set if available
-    };
-
-    fetchProfiles();
-  }, [account]);
-
-  useEffect(() => {
-    if (profiles.length > 0) {
-      setCurrentProfile(profiles[0]); // Set the first profile as current by default
+      setProfiles(data ?? []);
+      if (data?.[0]) {
+        switchProfile(String(data[0].id)); // Convert number to string
+      }
     }
-  }, [profiles]);
+  };
+
   const switchProfile = (profileId: string) => {
-    const profile = profiles.find((p) => p.id === profileId);
+    console.log(profiles);
+    const profile = profiles.find((p) => String(p.id) === profileId); // Handle both string and number IDs
     if (profile) {
       setCurrentProfile(profile);
-      console.log("Switched to profile:", profile);
     } else {
       console.warn(`Profile with ID ${profileId} not found`);
     }
@@ -151,28 +188,82 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email,
       password,
       options: {
-        data: { firstName, lastName },
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
       },
     });
-    if (error) throw error;
+
+    if (error) {
+      console.error("Supabase error:", error.message);
+      Alert.alert("Something went wrong", error.message);
+      return;
+    }
+
+    // Explicitly sign out to prevent automatic login after signup
+    await supabase.auth.signOut();
+    setSession(null);
+    setUser(null);
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (error) throw error;
+
+    if (error) {
+      console.error("Supabase error:", error.message);
+      Alert.alert("Something went wrong", error.message);
+      return;
+    }
+
+    setSession(data.session ?? null);
+    setUser(data.user ?? null);
   };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase error:", error.message);
+      Alert.alert("Something went wrong", error.message);
+      return;
+    }
+    setSession(null);
+    setUser(null);
+    setAccount(null);
+    setProfiles([]);
+    setCurrentProfile(null);
   };
 
   const resetPassword = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase error:", error.message);
+      Alert.alert("Something went wrong", error.message);
+      return;
+    }
+  };
+
+  const refreshProfiles = async () => {
+    if (account) {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("account_id", account.id);
+
+      if (error) {
+        console.error("Error refreshing profiles:", error.message);
+        return;
+      }
+
+      setProfiles(data ?? []);
+      // Only auto-select first profile if no current profile is selected
+      if (data?.[0] && !currentProfile) {
+        switchProfile(String(data[0].id));
+      }
+    }
   };
 
   const value: AuthContextType = {
@@ -188,6 +279,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     profiles,
     currentProfile,
     setCurrentProfile,
+    refreshProfiles,
   };
 
   return (
@@ -199,11 +291,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
+
 export const useCurrentProfile = () => {
   const { currentProfile } = useAuth();
   return currentProfile;

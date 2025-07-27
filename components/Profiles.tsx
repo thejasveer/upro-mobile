@@ -8,8 +8,15 @@ import { getNameIntial } from "./TopNavBar";
 import { IconSymbol } from "./ui/IconSymbol";
 
 export const Profiles = () => {
-  const { profiles, currentProfile, setCurrentProfile } = useAuth();
+  const { profiles, currentProfile, setCurrentProfile, refreshProfiles } =
+    useAuth();
   const [showAddUserForm, setShowAddUserForm] = useState(false);
+
+  const handleProfileCreated = async () => {
+    await refreshProfiles(); // Refresh the profiles list to show the newly created profile
+    setShowAddUserForm(false); // Go back to profiles list
+  };
+
   return (
     <SafeAreaView>
       {!showAddUserForm ? (
@@ -56,7 +63,10 @@ export const Profiles = () => {
           />
         </View>
       ) : (
-        <AddUserForm></AddUserForm>
+        <AddUserForm
+          onProfileCreated={handleProfileCreated}
+          onBack={() => setShowAddUserForm(false)}
+        />
       )}
     </SafeAreaView>
   );
@@ -82,53 +92,133 @@ const SetupProfile = ({
 
 export default function AddUserForm({
   setAsAddUserForm,
+  onProfileCreated,
+  onBack,
 }: {
   setAsAddUserForm?: () => void;
+  onProfileCreated?: () => void;
+  onBack?: () => void;
 }) {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
+  const [ageGroup, setAgeGroup] = useState("");
+  const [weight, setWeight] = useState("");
+  const [height, setHeight] = useState("");
+  const [dominantFoot, setDominantFoot] = useState("");
+  const [playingPosition, setPlayingPosition] = useState("");
   const [loading, setLoading] = useState(false);
+  const { account } = useAuth();
 
   const handleAddUser = async () => {
-    if (!name || !email) {
-      Alert.alert("Error", "Please fill in all fields");
+    if (!name || !gender || !ageGroup) {
+      Alert.alert("Error", "Please fill in all required fields");
+      return;
+    }
+
+    if (!account) {
+      Alert.alert("Error", "No account found");
       return;
     }
 
     setLoading(true);
-    const { data, error } = await supabase
-      .from("users")
-      .insert([{ name, email }]);
+    const { data, error } = await supabase.from("users").insert([
+      {
+        name,
+        account_id: account.id,
+        gender,
+        age_group: parseInt(ageGroup),
+        weight: weight ? parseFloat(weight) : null,
+        height: height ? parseFloat(height) : null,
+        dominant_foot:
+          dominantFoot === "right"
+            ? true
+            : dominantFoot === "left"
+              ? false
+              : null,
+        playing_position: playingPosition || null,
+      },
+    ]);
 
     setLoading(false);
     if (error) {
       Alert.alert("Error", error.message);
     } else {
-      Alert.alert("Success", "User added!");
+      Alert.alert("Success", "Profile created successfully!");
       setName("");
-      setEmail("");
+      setGender("");
+      setAgeGroup("");
+      setWeight("");
+      setHeight("");
+      setDominantFoot("");
+      setPlayingPosition("");
+      if (onProfileCreated) {
+        onProfileCreated();
+      }
     }
   };
 
   return (
     <View className="p-5">
-      <Text className="text-lg font-bold mb-2 text-center text-blue-700">
-        Add New User
-      </Text>
+      <View className="flex-row justify-between items-center mb-4">
+        <TouchableOpacity onPress={onBack} className="p-2">
+          <Text className="text-blue-600 text-lg">← Back</Text>
+        </TouchableOpacity>
+        <Text className="text-lg font-bold text-center text-blue-700 flex-1">
+          Create New Profile
+        </Text>
+        <View className="w-12" />
+      </View>
 
       <TextInput
-        placeholder="Name"
+        placeholder="Name *"
         value={name}
         onChangeText={setName}
         className="border border-gray-300 p-3 rounded-md mb-3 bg-white"
       />
+
       <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
+        placeholder="Gender (Male/Female/Other) *"
+        value={gender}
+        onChangeText={setGender}
         className="border border-gray-300 p-3 rounded-md mb-3 bg-white"
-        keyboardType="email-address"
-        autoCapitalize="none"
+      />
+
+      <TextInput
+        placeholder="Age Group (e.g., 18) *"
+        value={ageGroup}
+        onChangeText={setAgeGroup}
+        className="border border-gray-300 p-3 rounded-md mb-3 bg-white"
+        keyboardType="numeric"
+      />
+
+      <TextInput
+        placeholder="Weight (kg)"
+        value={weight}
+        onChangeText={setWeight}
+        className="border border-gray-300 p-3 rounded-md mb-3 bg-white"
+        keyboardType="numeric"
+      />
+
+      <TextInput
+        placeholder="Height (cm)"
+        value={height}
+        onChangeText={setHeight}
+        className="border border-gray-300 p-3 rounded-md mb-3 bg-white"
+        keyboardType="numeric"
+      />
+
+      <TextInput
+        placeholder="Dominant Foot (left/right)"
+        value={dominantFoot}
+        onChangeText={setDominantFoot}
+        className="border border-gray-300 p-3 rounded-md mb-3 bg-white"
+      />
+
+      <TextInput
+        placeholder="Playing Position"
+        value={playingPosition}
+        onChangeText={setPlayingPosition}
+        className="border border-gray-300 p-3 rounded-md mb-3 bg-white"
       />
 
       <TouchableOpacity
@@ -137,7 +227,7 @@ export default function AddUserForm({
         disabled={loading}
       >
         <Text className="text-white text-center font-semibold">
-          {loading ? "Adding..." : "Add User"}
+          {loading ? "Creating..." : "Create Profile"}
         </Text>
       </TouchableOpacity>
     </View>

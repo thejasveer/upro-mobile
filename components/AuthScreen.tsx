@@ -45,7 +45,6 @@ const AuthScreen = () => {
         Alert.alert("Success", "Check your email for the confirmation link!");
       }
     } catch (error: any) {
-      Alert.alert("Error", error.message);
     } finally {
       setLoading(false);
     }

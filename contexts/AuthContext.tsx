@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { Alert } from "react-native";
 import { supabase } from "../lib/supabase";
 
 export type Account = {
@@ -23,8 +24,8 @@ export type Profile = {
   gender: string;
   age_group: string;
   weight: number;
-  upro_gold: number;
   height: number;
+  upro_gold: number;
   dominant_foot: string;
   playing_position: string;
   created_at: string;
@@ -63,79 +64,88 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    };
-    getSession();
+    try {
+      const getSession = async () => {
+        const { data } = await supabase.auth.getSession();
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+        setLoading(false);
+      };
+      getSession();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-      }
-    );
+      const { data: listener } = supabase.auth.onAuthStateChange(
+        (_event, session) => {
+          setSession(session);
+          setUser(session?.user ?? null);
+        }
+      );
 
-    return () => {
-      listener.subscription.unsubscribe();
-    };
+      return () => {
+        listener?.subscription?.unsubscribe();
+      };
+    } catch (error) {
+      console.error("Error in AuthProvider useEffect:", error);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    }
   }, []);
 
+  const fetchAccount = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("accounts")
+      .select("*")
+      .eq("auth_user_id", user.id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching account:", error.message);
+      return;
+    }
+
+    setAccount(data);
+  };
   useEffect(() => {
-    const fetchAccount = async () => {
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("accounts")
-        .select("*")
-        .eq("auth_user_id", user.id)
-        .single();
-
-      if (error) {
+    if (user) {
+      try {
+        fetchAccount();
+      } catch (error) {
         console.error("Error fetching account:", error);
-        return;
+        Alert.alert("Error", "Failed to fetch account information.");
       }
-      console.log("Fetched account:", data);
-      setAccount(data);
-    };
-
-    fetchAccount();
+    }
   }, [user]);
-
   useEffect(() => {
-    const fetchProfiles = async () => {
-      if (!account) return;
-
+    try {
+      fetchProfiles();
+    } catch (error) {
+      console.error("Error fetching profiles:", error);
+      Alert.alert("Error", "Failed to fetch profiles.");
+    }
+  }, [account]);
+  const fetchProfiles = async () => {
+    if (account) {
       const { data, error } = await supabase
         .from("users")
         .select("*")
         .eq("account_id", account.id);
-      console.log("Fetching profiles for account:---------------------");
+
       if (error) {
-        console.error("Error fetching profiles:", error);
+        console.error("Error fetching profiles:", error.message);
         return;
       }
 
-      setProfiles(data || []);
-      //   setCurrentProfile(data?.[0] || null); // Set the first profile as current by default
-      switchProfile(data?.[0]?.id || ""); // Ensure current profile is set if available
-    };
-
-    fetchProfiles();
-  }, [account]);
-
-  useEffect(() => {
-    if (profiles.length > 0) {
-      setCurrentProfile(profiles[0]); // Set the first profile as current by default
+      setProfiles(data ?? []);
+      if (data?.[0]) {
+        switchProfile(data[0].id); // Automatically set first profile
+      }
     }
-  }, [profiles]);
+  };
+
   const switchProfile = (profileId: string) => {
+    console.log(profiles);
     const profile = profiles.find((p) => p.id === profileId);
     if (profile) {
       setCurrentProfile(profile);
-      console.log("Switched to profile:", profile);
     } else {
       console.warn(`Profile with ID ${profileId} not found`);
     }
@@ -151,28 +161,60 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email,
       password,
       options: {
-        data: { first_name: firstName, last_name: lastName },
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
       },
     });
-    if (error) throw error;
+
+    if (error) {
+      console.error("Supabase error:", error.message);
+      Alert.alert("Something went wrong", error.message);
+      return;
+    }
+
+    setSession(data.session ?? null);
+    setUser(data.user ?? null);
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (error) throw error;
+
+    if (error) {
+      console.error("Supabase error:", error.message);
+      Alert.alert("Something went wrong", error.message);
+      return;
+    }
+
+    setSession(data.session ?? null);
+    setUser(data.user ?? null);
   };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase error:", error.message);
+      Alert.alert("Something went wrong", error.message);
+      return;
+    }
+    setSession(null);
+    setUser(null);
+    setAccount(null);
+    setProfiles([]);
+    setCurrentProfile(null);
   };
 
   const resetPassword = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase error:", error.message);
+      Alert.alert("Something went wrong", error.message);
+      return;
+    }
   };
 
   const value: AuthContextType = {
@@ -199,11 +241,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
+
 export const useCurrentProfile = () => {
   const { currentProfile } = useAuth();
   return currentProfile;

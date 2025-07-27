@@ -1,4 +1,3 @@
-import { supabase } from "@/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import {
   createContext,
@@ -8,6 +7,7 @@ import {
   useState,
 } from "react";
 import { Alert } from "react-native";
+import { supabase } from "../lib/supabase";
 
 export type Account = {
   id: string;
@@ -90,6 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const fetchAccount = async () => {
+    if (!user) return;
     const { data, error } = await supabase
       .from("accounts")
       .select("*")

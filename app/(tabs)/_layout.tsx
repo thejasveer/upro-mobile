@@ -25,11 +25,11 @@ const navigations: NavItem[] = [
     title: "Home",
     icon: "house.fill",
   },
-  // {
-  //   name: "explore",
-  //   title: "Explore",
-  //   icon: "paperplane.fill",
-  // },
+  {
+    name: "daily",
+    title: "Daily",
+    icon: "paperplane.fill",
+  },
   {
     name: "trainings",
     title: "Trainings",

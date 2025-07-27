@@ -34,15 +34,12 @@ const AuthScreen = () => {
 
     try {
       if (mode === "signin") {
-        const { error } = await signIn(email, password);
-        if (error) throw error;
+        await signIn(email, password);
       } else {
-        const { error } = await signUp(email, password, firstName, lastName);
-        if (error) throw error;
+        await signUp(email, password, firstName, lastName);
         Alert.alert("Success", "Check your email for the confirmation link!");
       }
     } catch (error: any) {
-      Alert.alert("Error", error.message);
     } finally {
       setLoading(false);
     }
@@ -55,7 +52,7 @@ const AuthScreen = () => {
     }
 
     try {
-      const { error } = await resetPassword(email);
+      const error = await resetPassword(email);
       if (error) throw error;
       Alert.alert("Success", "Check your email for the reset link!");
     } catch (error: any) {

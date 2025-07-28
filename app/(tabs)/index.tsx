@@ -83,7 +83,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Action Buttons */}
-          <View className="flex-row space-x-4">
+          <View className="flex-row gap-4">
             <TouchableOpacity className="bg-blue-500 px-6 py-3 rounded-lg shadow-sm">
               <Text className="text-white font-bold">edit avatar</Text>
             </TouchableOpacity>

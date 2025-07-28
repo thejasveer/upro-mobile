@@ -20,9 +20,9 @@ const navigations: {
 }[] = [
   { name: "index", title: "Home", icon: "house.fill" },
   { name: "trainings", title: "Trainings", icon: "figure.walk" },
-  { name: "multiPlayer", title: "Multiplayer", icon: "person.3.fill" },
-  { name: "lockerRoom", title: "Locker Room", icon: "lock.fill" },
-  { name: "shop", title: "Shop", icon: "cart.fill" },
+  // { name: "multiPlayer", title: "Multiplayer", icon: "person.3.fill" },
+  // { name: "lockerRoom", title: "Locker Room", icon: "lock.fill" },
+  // { name: "shop", title: "Shop", icon: "cart.fill" },
 ];
 
 export default function TabLayout() {

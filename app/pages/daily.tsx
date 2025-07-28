@@ -1,7 +1,6 @@
 import { Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
-  Dimensions,
   SafeAreaView,
   ScrollView,
   Text,
@@ -10,43 +9,13 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 
-import { useVideos } from "@/hooks/useVideos";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTheme } from "@react-navigation/native";
 
-const { width } = Dimensions.get("window");
-
 export default function DailyTraining() {
   const { colors } = useTheme();
-  const { videos, loading, getFirstVideo } = useVideos();
-  const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
-  useEffect(() => {
-    console.log("📱 Daily Training - videos state:", videos);
-    console.log("📱 Daily Training - loading state:", loading);
-
-    if (videos.length > 0) {
-      const firstVideo = getFirstVideo();
-      console.log("📱 Daily Training - setting selected video:", firstVideo);
-      setSelectedVideo(firstVideo);
-    }
-  }, [videos, loading]);
-
-  const extractYouTubeVideoId = (url: string) => {
-    if (!url) return null;
-
-    const regex =
-      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const match = url.match(regex);
-    const videoId = match ? match[1] : null;
-
-    console.log("🔗 Extracted YouTube video ID:", { url, videoId });
-    return videoId;
-  };
-
-  const getYouTubeEmbedUrl = (videoId: string) => {
-    return `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1&rel=0&showinfo=0&autohide=1&playsinline=1&iv_load_policy=3&disablekb=1&color=white&theme=dark`;
-  };
+  const [showVideo, setShowVideo] = useState(false);
 
   const renderDifficultyBadges = (difficulty: number) => {
     const badges = [];
@@ -140,62 +109,97 @@ export default function DailyTraining() {
               elevation: 10,
             }}
           >
-            {/* Gradient Background */}
-            <View
-              className="absolute inset-0 rounded-3xl"
-              style={{
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                backgroundColor: "#667eea", // Fallback for React Native
-              }}
-            />
-
             {/* Video Section */}
             <View className="relative">
               <View className="w-full h-56 rounded-t-3xl overflow-hidden">
-                {selectedVideo && selectedVideo.url ? (
+                {showVideo ? (
                   <WebView
-                    style={{ flex: 1 }}
+                    style={{
+                      flex: 1,
+                      backgroundColor: "#000000",
+                    }}
                     javaScriptEnabled={true}
                     domStorageEnabled={true}
                     source={{
-                      uri: getYouTubeEmbedUrl(
-                        extractYouTubeVideoId(selectedVideo.url) || ""
-                      ),
+                      html: `
+                        <html>
+                          <head>
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <style>
+                              body { 
+                                margin: 0; 
+                                padding: 0; 
+                                background: #000;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                height: 100vh;
+                              }
+                              video { 
+                                width: 100%; 
+                                height: 100%; 
+                                object-fit: contain;
+                              }
+                            </style>
+                          </head>
+                          <body>
+                            <video controls preload="metadata">
+                              <source src="https://agecevbyuxpwxjeclmth.supabase.co/storage/v1/object/public/videos/demo.mp4" type="video/mp4">
+                              Your browser does not support the video tag.
+                            </video>
+                          </body>
+                        </html>
+                      `,
                     }}
                     allowsFullscreenVideo={true}
-                    mediaPlaybackRequiresUserAction={false}
+                    mediaPlaybackRequiresUserAction={true}
                     allowsInlineMediaPlayback={true}
-                    scalesPageToFit={false}
+                    scalesPageToFit={true}
                     scrollEnabled={false}
                     bounces={false}
                   />
                 ) : (
-                  <View className="w-full h-full bg-gradient-to-br from-green-400 to-blue-500 items-center justify-center">
-                    <MaterialCommunityIcons
-                      name="play-circle"
-                      size={64}
-                      color="white"
-                    />
-                    <Text className="text-white font-semibold mt-2">
-                      No video available
-                    </Text>
-                  </View>
+                  <TouchableOpacity
+                    className="w-full h-full items-center justify-center"
+                    style={{
+                      backgroundColor: "#3b82f6", // Blue background
+                    }}
+                    onPress={() => setShowVideo(true)}
+                  >
+                    <View className="items-center">
+                      <MaterialCommunityIcons
+                        name="play-circle"
+                        size={64}
+                        color="white"
+                      />
+                      <Text className="text-white font-semibold mt-2">
+                        Tap to load video
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
                 )}
               </View>
 
-              {/* Floating Play Button Overlay */}
-              <TouchableOpacity
-                className="absolute bottom-4 right-4 bg-white/90 rounded-full p-3"
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 8,
-                  elevation: 6,
-                }}
-              >
-                <MaterialCommunityIcons name="play" size={20} color="#16a34a" />
-              </TouchableOpacity>
+              {/* Close Video Button */}
+              {showVideo && (
+                <TouchableOpacity
+                  className="absolute top-4 right-4 bg-black/50 rounded-full p-2"
+                  onPress={() => setShowVideo(false)}
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4,
+                    elevation: 4,
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="close"
+                    size={20}
+                    color="white"
+                  />
+                </TouchableOpacity>
+              )}
             </View>
 
             {/* Session Info Card */}
@@ -207,7 +211,7 @@ export default function DailyTraining() {
                     className="text-2xl font-bold mb-2"
                     style={{ color: colors.text }}
                   >
-                    {selectedVideo?.name || "Daily Soccer Challenge"}
+                    {"Daily Soccer Challenge"}
                   </Text>
                   <View className="flex-row items-center">
                     <View className="bg-green-100 rounded-full px-3 py-1 mr-3">
@@ -249,8 +253,9 @@ export default function DailyTraining() {
               {/* Description */}
               <View className="bg-gray-50 rounded-2xl p-4 mb-6">
                 <Text className="text-gray-700 leading-6">
-                  {selectedVideo?.description ||
-                    "Complete today's soccer training challenge! This session includes dynamic warm-ups, ball control drills, agility training, and shooting practice to improve your overall game."}
+                  {
+                    "Complete today's soccer training challenge! This session includes dynamic warm-ups, ball control drills, agility training, and shooting practice to improve your overall game."
+                  }
                 </Text>
               </View>
 

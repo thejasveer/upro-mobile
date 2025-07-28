@@ -30,6 +30,7 @@ export default function SingleTrainingScreen() {
   const { videos, getFirstVideo } = useVideos();
   const { colors } = useTheme();
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
+  const [showVideo, setShowVideo] = useState(false);
 
   const isExercise = type === "exercise";
   const content = isExercise ? exercise : training;
@@ -54,18 +55,6 @@ export default function SingleTrainingScreen() {
   if (!user) {
     return <AuthScreen />;
   }
-
-  const extractYouTubeVideoId = (url: string) => {
-    if (!url) return null;
-    const regex =
-      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-  };
-
-  const getYouTubeEmbedUrl = (videoId: string) => {
-    return `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1&rel=0&showinfo=0&autohide=1&playsinline=1&iv_load_policy=3&disablekb=1&color=white&theme=dark`;
-  };
 
   const renderDifficultyBadges = (difficulty: number) => {
     const badges = [];
@@ -245,45 +234,77 @@ export default function SingleTrainingScreen() {
             {/* Video Section */}
             <View className="relative">
               <View className="w-full h-56 rounded-t-3xl overflow-hidden">
-                {selectedVideo && selectedVideo.url ? (
+                {showVideo ? (
                   <WebView
-                    style={{ flex: 1 }}
+                    style={{
+                      flex: 1,
+                      backgroundColor: "#000000",
+                    }}
                     javaScriptEnabled={true}
                     domStorageEnabled={true}
                     source={{
-                      uri: getYouTubeEmbedUrl(
-                        extractYouTubeVideoId(selectedVideo.url) || ""
-                      ),
+                      html: `
+                        <html>
+                          <head>
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <style>
+                              body { 
+                                margin: 0; 
+                                padding: 0; 
+                                background: #000;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                height: 100vh;
+                              }
+                              video { 
+                                width: 100%; 
+                                height: 100%; 
+                                object-fit: contain;
+                              }
+                            </style>
+                          </head>
+                          <body>
+                            <video controls preload="metadata">
+                              <source src="https://agecevbyuxpwxjeclmth.supabase.co/storage/v1/object/public/videos/demo.mp4" type="video/mp4">
+                              Your browser does not support the video tag.
+                            </video>
+                          </body>
+                        </html>
+                      `,
                     }}
                     allowsFullscreenVideo={true}
-                    mediaPlaybackRequiresUserAction={false}
+                    mediaPlaybackRequiresUserAction={true}
                     allowsInlineMediaPlayback={true}
-                    scalesPageToFit={false}
+                    scalesPageToFit={true}
                     scrollEnabled={false}
                     bounces={false}
                   />
                 ) : (
-                  <View
+                  <TouchableOpacity
                     className="w-full h-full items-center justify-center"
                     style={{
                       backgroundColor: isExercise ? "#3b82f6" : "#667eea",
                     }}
+                    onPress={() => setShowVideo(true)}
                   >
-                    <MaterialCommunityIcons
-                      name={isExercise ? "dumbbell" : "play-circle"}
-                      size={64}
-                      color="white"
-                    />
-                    <Text className="text-white font-semibold mt-2">
-                      {isExercise ? "Exercise Preview" : "Training Preview"}
-                    </Text>
-                  </View>
+                    <View className="items-center">
+                      <MaterialCommunityIcons
+                        name={isExercise ? "dumbbell" : "play-circle"}
+                        size={64}
+                        color="white"
+                      />
+                      <Text className="text-white font-semibold mt-2">
+                        Tap to load video
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
                 )}
               </View>
 
               {/* Premium Badge */}
               {isPremium && (
-                <View className="absolute top-4 right-4 bg-yellow-500 rounded-full px-3 py-1">
+                <View className="absolute top-4 left-4 bg-yellow-500 rounded-full px-3 py-1">
                   <View className="flex-row items-center">
                     <MaterialCommunityIcons
                       name="crown"
@@ -297,20 +318,47 @@ export default function SingleTrainingScreen() {
                 </View>
               )}
 
-              {/* Floating Play Button Overlay */}
-              <TouchableOpacity
-                className="absolute bottom-4 right-4 bg-white/90 rounded-full p-3"
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 8,
-                  elevation: 6,
-                }}
-                onPress={() => console.log("Play video preview")}
-              >
-                <MaterialCommunityIcons name="play" size={20} color="#16a34a" />
-              </TouchableOpacity>
+              {/* Close Video Button */}
+              {showVideo && (
+                <TouchableOpacity
+                  className="absolute top-4 right-4 bg-black/50 rounded-full p-2"
+                  onPress={() => setShowVideo(false)}
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4,
+                    elevation: 4,
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="close"
+                    size={20}
+                    color="white"
+                  />
+                </TouchableOpacity>
+              )}
+
+              {/* Floating Play Button Overlay - only show when video is not loaded */}
+              {!showVideo && (
+                <TouchableOpacity
+                  className="absolute bottom-4 right-4 bg-white/90 rounded-full p-3"
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 8,
+                    elevation: 6,
+                  }}
+                  onPress={() => setShowVideo(true)}
+                >
+                  <MaterialCommunityIcons
+                    name="play"
+                    size={20}
+                    color="#16a34a"
+                  />
+                </TouchableOpacity>
+              )}
             </View>
 
             {/* Session Info Card */}

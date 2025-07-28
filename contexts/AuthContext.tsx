@@ -165,11 +165,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const profiles = data ?? [];
       setProfiles(profiles);
 
-      // Only switch to first profile if we have profiles and no current profile is set
-      if (profiles.length > 0 && !currentProfile) {
-        const firstProfile = profiles[0];
-        setCurrentProfile(firstProfile);
-      } else if (profiles.length === 0) {
+      // Don't auto-select any profile - let user choose
+      if (profiles.length === 0) {
         console.log("No profiles found for account");
         setCurrentProfile(null);
       }

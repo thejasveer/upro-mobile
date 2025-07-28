@@ -1,9 +1,8 @@
 import { Stack } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, Text } from "react-native";
 
 import AuthScreen from "@/components/AuthScreen";
 import { useAuth } from "@/contexts/AuthContext";
-import { InfoText } from "@/components/Training";
 
 export default function ViewMoreTrainingScreen() {
     const { user } = useAuth();
@@ -22,21 +21,11 @@ export default function ViewMoreTrainingScreen() {
             />
 
             <ScrollView className="flex-1 p-4 bg-white">
-                <View style={{ backgroundColor: '#d1d5db', padding: 20, marginBottom: 16, borderRadius: 8 }}>
-                    <Prevv>Push ups</Prevv>
+                <View className="flex-1">
+                    {/* TODO */}
                 </View>
-                
-                <View style={{ backgroundColor: '#d1d5db', padding: 20, marginBottom: 16, borderRadius: 8 }}>
-                    <Prevv>Jumps</Prevv>
-                </View>
-                
-                <View style={{ backgroundColor: '#d1d5db', padding: 20, marginBottom: 16, borderRadius: 8 }}>
-                    <Prevv>Short run</Prevv>
-                </View>
+               
             </ScrollView>
-
-
-
         </>
     )
 }

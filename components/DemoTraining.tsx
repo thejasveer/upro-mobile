@@ -38,7 +38,7 @@ const DemoTraining = ({
     if (trainings && currentIndex < trainings.length - 1) {
       const nextTraining = trainings[currentIndex + 1];
       if (nextTraining) {
-        router.replace(`/trainings/${nextTraining.id}`);
+        router.replace(`/trainings/single/${nextTraining.id}`);
       }
     }
   };
@@ -47,7 +47,7 @@ const DemoTraining = ({
     if (trainings && currentIndex > 0) {
       const prevTraining = trainings[currentIndex - 1];
       if (prevTraining) {
-        router.replace(`/trainings/${prevTraining.id}`);
+        router.replace(`/trainings/single/${prevTraining.id}`);
       }
     }
   };

@@ -1,16 +1,33 @@
-import "react-native-reanimated";
 import {
   DarkTheme,
   DefaultTheme,
-  ThemeProvider,
+  Theme,
+  ThemeProvider
 } from "@react-navigation/native";
-import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import "react-native-reanimated";
 import "./globals.css";
 
 import { AuthProvider } from "@/contexts/AuthContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+
+const AppDarkTheme: Theme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    primary: 'rgb(34, 197, 94)',
+  },
+};
+
+const AppLightTheme: Theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: 'rgb(34, 197, 94)',
+  },
+}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -25,7 +42,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={colorScheme === "dark" ? AppDarkTheme : AppLightTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 

@@ -1,15 +1,17 @@
-import { useEffect } from "react";
-import { ScrollView, View, Text, TouchableOpacity } from "react-native";
 import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 import AuthScreen from "@/components/AuthScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTrainings } from "@/hooks/useTrainings";
+import { useTheme } from "@react-navigation/native";
 
 export default function ViewMoreTrainingScreen() {
   const { user } = useAuth();
   const { moreId } = useLocalSearchParams();
   const { trainings, getTrainings } = useTrainings();
+  const { dark } = useTheme();
 
   useEffect(() => {
     getTrainings();
@@ -34,13 +36,22 @@ export default function ViewMoreTrainingScreen() {
     },
   ].find(section => section.id === moreId);
 
-  const optionColors = [
-    "bg-green-200",
-    "bg-teal-200",
-    "bg-yellow-200",
-    "bg-green-300",
-    "bg-teal-300",
-  ];
+
+    const optionColors = dark
+    ? [
+        "bg-green-300",
+        "bg-teal-300",
+        "bg-yellow-200",
+        "bg-green-300",
+        "bg-teal-300",
+      ]
+    : [
+        "bg-green-200",
+        "bg-teal-200",
+        "bg-yellow-200",
+        "bg-green-300",
+        "bg-teal-300",
+      ];
 
   if (!moreId) {
     return <Redirect href="/trainings" />;

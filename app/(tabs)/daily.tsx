@@ -8,8 +8,10 @@ import {
   View,
 } from "react-native";
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import { useTheme } from "@react-navigation/native";
 
 export default function DailyTraining() {
+  const { colors } = useTheme();
   const renderDifficultyBadges = (difficulty: number) => {
     const badges = [];
     for (let i = 1; i <= 3; i++) {
@@ -37,10 +39,10 @@ export default function DailyTraining() {
         }}
       />
 
-      <SafeAreaView className="flex-1 bg-gray-100">
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
         <ScrollView className="flex-1">
           {/* Main Content Card */}
-          <View className="m-4 bg-white rounded-lg shadow-sm">
+          <View className="m-4 rounded-lg shadow-sm" style={{ backgroundColor: colors.card }}>
             {/* Video Preview */}
             <View className="relative">
               <View className="w-full h-48 bg-gray-200 rounded-t-lg items-center justify-center">
@@ -70,17 +72,17 @@ export default function DailyTraining() {
                   </Text>
                   <View className="flex-row items-center">
                     <IconSymbol name="house.fill" size={16} color="#6b7280" />
-                    <Text className="ml-2 text-gray-600">45 mins</Text>
+                    <Text className="ml-2" style={{ color: colors.text }}>45 mins</Text>
                   </View>
                 </View>
                 <View className="items-end">
-                  <Text className="text-sm text-gray-600">Total XP</Text>
-                  <Text className="text-xl font-bold text-green-600">500</Text>
+                  <Text className="text-sm" style={{ color: colors.text }}>Total XP</Text>
+                  <Text className="text-xl font-bold" style={{ color: colors.primary }}>500</Text>
                 </View>
               </View>
 
               {/* Description */}
-              <Text className="text-gray-700 mb-6 leading-5">
+              <Text className="mb-6 leading-5" style={{ color: colors.text }}>
                 Football, also called association football or soccer, is a game
                 involving two teams of 11 players who try to maneuver the ball
                 into the other team's goal without using their hands or arms.
@@ -92,24 +94,24 @@ export default function DailyTraining() {
                   Exercises
                 </Text>
                 <View className="flex-row items-center justify-between py-2 border-b border-gray-100">
-                  <Text className="text-gray-800 flex-1">Push ups</Text>
+                  <Text className="flex-1" style={{ color: colors.text }}>Push ups</Text>
                   <View className="flex-row items-center">
-                    <Text className="text-gray-600 mr-4">15mins</Text>
-                    <Text className="text-green-600 font-medium">50xp</Text>
+                    <Text className="mr-4" style={{ color: colors.text }}>15mins</Text>
+                    <Text className="font-medium" style={{ color: colors.primary }}>50xp</Text>
                   </View>
                 </View>
                 <View className="flex-row items-center justify-between py-2 border-b border-gray-100">
-                  <Text className="text-gray-800 flex-1">Pull ups</Text>
+                  <Text className="flex-1" style={{ color: colors.text }}>Pull ups</Text>
                   <View className="flex-row items-center">
-                    <Text className="text-gray-600 mr-4">15mins</Text>
-                    <Text className="text-green-600 font-medium">50xp</Text>
+                    <Text className="mr-4" style={{ color: colors.text }}>15mins</Text>
+                    <Text className="font-medium" style={{ color: colors.primary }}>50xp</Text>
                   </View>
                 </View>
                 <View className="flex-row items-center justify-between py-2 border-b border-gray-100">
-                  <Text className="text-gray-800 flex-1">Dribbles</Text>
+                  <Text className="flex-1" style={{ color: colors.text }}>Dribbles</Text>
                   <View className="flex-row items-center">
-                    <Text className="text-gray-600 mr-4">15mins</Text>
-                    <Text className="text-green-600 font-medium">50xp</Text>
+                    <Text className="mr-4" style={{ color: colors.text }}>15mins</Text>
+                    <Text className="font-medium" style={{ color: colors.primary }}>50xp</Text>
                   </View>
                 </View>
               </View>

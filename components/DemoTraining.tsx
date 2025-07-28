@@ -2,6 +2,7 @@ import { TrainingInterface } from "@/app/(tabs)/trainings";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTrainings } from "@/hooks/useTrainings";
+import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -28,6 +29,7 @@ const DemoTraining = ({
     getTrainings();
     if (training?.id) findIndex(training.id);
   }, [training?.id]);
+  const { colors } = useTheme();
 
   const titleName = training?.title || "Training Session";
   const description = training?.description || "No description available.";
@@ -51,7 +53,6 @@ const DemoTraining = ({
       }
     }
   };
-
   const renderDifficultyBadges = (difficulty: number) => {
     const badges = [];
     for (let i = 1; i <= 3; i++) {
@@ -59,15 +60,11 @@ const DemoTraining = ({
         <View
           key={i}
           className={`w-8 h-8 rounded-full items-center justify-center ${
-            i <= difficulty ? 'bg-green-500' : 'bg-gray-300'
+            i <= difficulty ? "bg-green-500" : "bg-gray-300"
           }`}
         >
-          <IconSymbol
-            name="star.fill"
-            size={16}
-            color="white"
-          />
-        </View>
+          <IconSymbol name="star.fill" size={16} color="white" />
+        </View>,
       );
     }
     return badges;
@@ -90,10 +87,10 @@ const DemoTraining = ({
 
   return (
     training && (
-    <SafeAreaView className="flex-1 bg-gray-100">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       <ScrollView className="flex-1">
         {/* Main Content Card */}
-        <View className="m-4 bg-white rounded-lg shadow-sm">
+        <View className="m-4 rounded-lg shadow-sm" style={{ backgroundColor: colors.card }}>
           {/* Video Preview */}
           <View className="relative">
             <View className="w-full h-48 bg-gray-200 rounded-t-lg items-center justify-center">
@@ -113,8 +110,8 @@ const DemoTraining = ({
                 />
               )}
               <View className="absolute inset-0 items-center justify-center">
-                <View className="w-16 h-16 bg-green-500 rounded-full items-center justify-center">
-                  <IconSymbol name="paperplane.fill" size={24} color="white" />
+                <View className="w-16 h-16 rounded-full items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                  <IconSymbol name="paperplane.fill" size={24} color={colors.background} />
                 </View>
               </View>
             </View>
@@ -124,26 +121,26 @@ const DemoTraining = ({
           <View className="p-4">
             <View className="flex-row items-center justify-between mb-4">
               <View className="flex-1">
-                <Text className="text-2xl font-bold text-gray-800 mb-2">
+                <Text className="text-2xl font-bold mb-2" style={{ color: colors.text }}>
                   {titleName}
                 </Text>
                 <View className="flex-row items-center">
-                  <IconSymbol name="clock" size={16} color="#6b7280" />
-                  <Text className="ml-2 text-gray-600">
+                  <IconSymbol name="clock" size={16} color={colors.text} />
+                  <Text className="ml-2" style={{ color: colors.text }}>
                     {duration} mins
                   </Text>
                 </View>
               </View>
               <View className="items-end">
-                <Text className="text-sm text-gray-600">Total XP</Text>
-                <Text className="text-xl font-bold text-green-600">
+                <Text className="text-sm" style={{ color: colors.text }}>Total XP</Text>
+                <Text className="text-xl font-bold" style={{ color: colors.primary }}>
                   {xp} 
                 </Text>
               </View>
             </View>
 
             {/* Description */}
-            <Text className="text-gray-700 mb-6 leading-5">
+            <Text className="mb-6 leading-5" style={{ color: colors.text }}>
               {description}
             </Text>
 

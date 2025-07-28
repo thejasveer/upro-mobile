@@ -11,10 +11,12 @@ import {
 import AuthScreen from "@/components/AuthScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTheme } from "@react-navigation/native";
 
 export default function HomeScreen() {
   const { user, account, loading, signOut, currentProfile } = useAuth();
   const router = useRouter();
+  const { colors } = useTheme();
 
   // React.useEffect(() => {
   //   signOut()
@@ -28,7 +30,7 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
+      <View className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
         <ActivityIndicator size="large" color="#3b82f6" />
         <Text className="mt-4 text-gray-600">Loading...</Text>
       </View>
@@ -41,7 +43,7 @@ export default function HomeScreen() {
 
   if (!account) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
+      <View className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
         <Text className="text-lg">No account found. Please log in again.</Text>
       </View>
     );
@@ -58,12 +60,12 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       <ScrollView>
         {/* Top Header Section */}
         <View className="px-6 pt-4 pb-6">
           <View className="items-center">
-            <Text className="text-2xl font-bold text-gray-800 mb-1">
+            <Text className="text-2xl font-bold mb-1" style={{ color: colors.text }}>
               {currentProfile?.name}
             </Text>
             <Text className="text-base text-gray-600">

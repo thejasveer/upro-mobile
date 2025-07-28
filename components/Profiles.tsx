@@ -1,9 +1,10 @@
 import { useAuth } from "@/contexts/AuthContext";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { supabase } from "@/lib/supabase";
+import { useTheme } from "@react-navigation/native";
 import { getNameIntial } from "./TopNavBar";
 import { IconSymbol } from "./ui/IconSymbol";
 
@@ -11,6 +12,7 @@ export const Profiles = () => {
   const { profiles, currentProfile, setCurrentProfile, refreshProfiles } =
     useAuth();
   const [showAddUserForm, setShowAddUserForm] = useState(false);
+  const { colors } = useTheme();
 
   const handleProfileCreated = async () => {
     await refreshProfiles(); // Refresh the profiles list to show the newly created profile
@@ -20,7 +22,7 @@ export const Profiles = () => {
   return (
     <SafeAreaView>
       {!showAddUserForm ? (
-        <View className="p-5 flex flex-col gap-3 ">
+        <View className="p-5 flex flex-col gap-9 ">
           <Text className="text-3xl text-[#0d9447]">Profiles</Text>
 
           {profiles.length > 0 &&
@@ -44,7 +46,7 @@ export const Profiles = () => {
                     {getNameIntial(profile.name)}
                   </Text>
                 </TouchableOpacity>
-                <Text className="text-lg  font-semibold ml-4">
+                <Text className="text-lg  font-semibold ml-4" style={{ color: colors.text }}>
                   {profile.name} {}
                   <Text className=" text-sm text-gray-500">
                     {profile.subscription_type === 1
@@ -82,7 +84,9 @@ const SetupProfile = ({
       <TouchableOpacity onPress={setShowAddUserForm}>
         <View className="flex-1 items-center justify-center">
           <View className=" h-40 w-40 rounded-full bg-gray-300 flex justify-center items-center">
-            <IconSymbol size={28} color={"white"} name={"plus"}></IconSymbol>
+              <Text className="text-3xl">
+                +
+              </Text>
           </View>
         </View>
       </TouchableOpacity>

@@ -114,29 +114,33 @@ export default function TrainingsScreen() {
             {/* Options - horizontal linear with colorful backgrounds */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View className="flex-row">
-                {section.data.length === 0 && (
-                  <View className="py-8 px-4">
-                    <Text className="text-gray-500">
-                      No trainings available.
-                    </Text>
-                  </View>
-                )}
+                {section.data
+                  .filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .length === 0 && (
+                    <View className="py-8 px-4">
+                      <Text className="text-gray-500">
+                        No trainings available.
+                      </Text>
+                    </View>
+                  )}
 
-                {section.data.map((item, idx) => {
-                  const bgClass = optionColors[idx % optionColors.length];
+                {section.data
+                  .filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map((item, idx) => {
+                    const bgClass = optionColors[idx % optionColors.length];
 
-                  return (
-                    <TouchableOpacity
-                      key={item.id}
-                      onPress={() =>
-                        router.push(`/trainings/single/${item.id}`)
-                      }
-                      className={`${bgClass} w-40 mr-4 aspect-square rounded-md items-center justify-center`}
-                    >
-                      <Text className="text-center px-2">{item.title}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
+                    return (
+                      <TouchableOpacity
+                        key={item.id}
+                        onPress={() =>
+                          router.push(`/trainings/single/${item.id}`)
+                        }
+                        className={`${bgClass} w-40 mr-4 aspect-square rounded-md items-center justify-center`}
+                      >
+                        <Text className="text-center px-2">{item.title}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
               </View>
             </ScrollView>
           </View>

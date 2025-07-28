@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   SafeAreaView,
@@ -14,6 +14,7 @@ import { useTheme } from "@react-navigation/native";
 
 export default function DailyTraining() {
   const { colors } = useTheme();
+  const router = useRouter();
 
   const [showVideo, setShowVideo] = useState(false);
 
@@ -396,7 +397,7 @@ export default function DailyTraining() {
                 elevation: 8,
               }}
               onPress={() => {
-                console.log("Start daily training");
+                router.push("/pages/daily-training");
               }}
             >
               <MaterialCommunityIcons

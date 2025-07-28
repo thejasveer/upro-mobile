@@ -2,7 +2,7 @@ import {
   DarkTheme,
   DefaultTheme,
   Theme,
-  ThemeProvider
+  ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -17,7 +17,7 @@ const AppDarkTheme: Theme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    primary: 'rgb(34, 197, 94)',
+    primary: "rgb(34, 197, 94)",
   },
 };
 
@@ -25,9 +25,9 @@ const AppLightTheme: Theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: 'rgb(34, 197, 94)',
+    primary: "rgb(34, 197, 94)",
   },
-}
+};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -42,12 +42,15 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === "dark" ? AppDarkTheme : AppLightTheme}>
+      <ThemeProvider
+        value={colorScheme === "dark" ? AppDarkTheme : AppLightTheme}
+      >
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
           <Stack.Screen name="/trainings/single/[id]" />
           <Stack.Screen name="/trainings/view-more" />
+          <Stack.Screen name="/pages/daily-training" />
 
           <Stack.Screen name="+not-found" />
         </Stack>

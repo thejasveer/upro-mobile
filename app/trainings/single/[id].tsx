@@ -15,7 +15,6 @@ import AuthScreen from "@/components/AuthScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import { useExercises } from "@/hooks/useExercises";
 import { useTrainings } from "@/hooks/useTrainings";
-import { useVideos } from "@/hooks/useVideos";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTheme } from "@react-navigation/native";
 
@@ -27,9 +26,7 @@ export default function SingleTrainingScreen() {
   const { training, getTraining, trainingExercises, getTrainingExercises } =
     useTrainings();
   const { exercise, getExercise } = useExercises();
-  const { videos, getFirstVideo } = useVideos();
   const { colors } = useTheme();
-  const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [showVideo, setShowVideo] = useState(false);
 
   const isExercise = type === "exercise";
@@ -44,13 +41,6 @@ export default function SingleTrainingScreen() {
       getTrainingExercises(Number(id)); // Fetch related exercises for training sessions
     }
   }, [id, type]);
-
-  useEffect(() => {
-    if (videos.length > 0) {
-      const firstVideo = getFirstVideo();
-      setSelectedVideo(firstVideo);
-    }
-  }, [videos]);
 
   if (!user) {
     return <AuthScreen />;

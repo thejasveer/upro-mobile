@@ -4,10 +4,9 @@ import { useTrainings } from "@/hooks/useTrainings";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Alert,
-  Image,
   SafeAreaView,
   ScrollView,
   Text,
@@ -30,7 +29,6 @@ const DemoTraining = ({
   const { count, getTrainings, trainings, findIndex, currentIndex } =
     useTrainings();
   const { currentProfile } = useAuth();
-  const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
   useEffect(() => {
     getTrainings();
@@ -89,21 +87,6 @@ const DemoTraining = ({
       );
     }
     return badges;
-  };
-
-  const extractYouTubeVideoId = (url: string) => {
-    const regExp =
-      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    const videoId = match && match[2].length === 11 ? match[2] : null;
-    console.log("🔗 Extracted YouTube video ID:", { url, videoId });
-    return videoId;
-  };
-
-  const getYouTubeThumbnail = (videoId: string) => {
-    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-    console.log("🖼️ YouTube thumbnail URL:", thumbnailUrl);
-    return thumbnailUrl;
   };
 
   const handleStartTraining = () => {
@@ -185,33 +168,21 @@ const DemoTraining = ({
             {/* Video Preview */}
             <View className="relative">
               <View className="w-full h-56 rounded-t-3xl overflow-hidden">
-                {selectedVideo && selectedVideo.url ? (
-                  <Image
-                    source={{
-                      uri: getYouTubeThumbnail(
-                        extractYouTubeVideoId(selectedVideo.url) || ""
-                      ),
-                    }}
-                    className="w-full h-full"
-                    resizeMode="cover"
+                <View
+                  className="w-full h-full items-center justify-center"
+                  style={{
+                    backgroundColor: "#667eea",
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="play-circle"
+                    size={64}
+                    color="white"
                   />
-                ) : (
-                  <View
-                    className="w-full h-full items-center justify-center"
-                    style={{
-                      backgroundColor: "#667eea",
-                    }}
-                  >
-                    <MaterialCommunityIcons
-                      name="play-circle"
-                      size={64}
-                      color="white"
-                    />
-                    <Text className="text-white font-semibold mt-2">
-                      Training Preview
-                    </Text>
-                  </View>
-                )}
+                  <Text className="text-white font-semibold mt-2">
+                    Training Preview
+                  </Text>
+                </View>
               </View>
 
               {/* Play Button Overlay */}

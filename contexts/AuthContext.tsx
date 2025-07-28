@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [account, setAccount] = useState<Account | null>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     try {
@@ -224,17 +225,55 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Supabase error:", error.message);
-      Alert.alert("Something went wrong", error.message);
+    // Prevent multiple simultaneous signout attempts
+    if (isSigningOut) {
+      console.log("Sign out already in progress");
       return;
     }
-    setSession(null);
-    setUser(null);
-    setAccount(null);
-    setProfiles([]);
-    setCurrentProfile(null);
+
+    try {
+      setIsSigningOut(true);
+
+      // Always clear local state first
+      setSession(null);
+      setUser(null);
+      setAccount(null);
+      setProfiles([]);
+      setCurrentProfile(null);
+
+      // Then attempt to sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        // Log the error but don't throw if it's just a missing session
+        if (
+          error.message?.includes("session") ||
+          error.message?.includes("not authenticated")
+        ) {
+          console.log("No active session to sign out from:", error.message);
+          // This is expected when there's no session, so we just log and continue
+          return;
+        }
+
+        // For other errors, throw them to be handled by the caller
+        console.error("Supabase signOut error:", error.message);
+        throw new Error(error.message);
+      }
+    } catch (error: any) {
+      // Re-throw errors that aren't session-related
+      if (
+        !error.message?.includes("session") &&
+        !error.message?.includes("not authenticated")
+      ) {
+        throw error;
+      }
+      console.log(
+        "Session-related error during signout (safe to ignore):",
+        error.message
+      );
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   const resetPassword = async (email: string) => {

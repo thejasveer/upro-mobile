@@ -7,10 +7,13 @@ const ProfileScreen: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      const { error } = await signOut();
-      if (error) throw error;
+      await signOut();
     } catch (error: any) {
-      Alert.alert("Error", error.message);
+      console.error("Logout error:", error);
+      Alert.alert(
+        "Error",
+        error.message || "Failed to logout. Please try again."
+      );
     }
   };
 

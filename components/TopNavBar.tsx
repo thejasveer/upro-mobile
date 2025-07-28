@@ -1,7 +1,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
-import { Animated, Text, TouchableOpacity, View } from "react-native";
+import { useRef, useState } from "react";
+import { Alert, Animated, Text, TouchableOpacity, View } from "react-native";
 
 const TopNavbar = () => {
   const [isFriendMenuVisible, setIsFriendMenuVisible] = useState(false);
@@ -70,8 +70,13 @@ const TopNavbar = () => {
           <Text className="text-green-500 font-semibold">Add new profile</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => {
-            signOut();
+          onPress={async () => {
+            try {
+              await signOut();
+            } catch (error: any) {
+              console.error("Logout error:", error);
+              Alert.alert("Error", "Failed to logout. Please try again.");
+            }
           }}
           className="bg-white p-2 rounded-full mt-2"
         >

@@ -55,10 +55,6 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 bg-white">
       {/* Top Header Section */}
       <View className="px-6 pt-4 pb-6">
-        <TouchableOpacity className="mb-4">
-          <Ionicons name="arrow-back" size={24} color="#374151" />
-        </TouchableOpacity>
-        
         <View className="items-center">
           <Text className="text-2xl font-bold text-gray-800 mb-1">
             {currentProfile?.name}

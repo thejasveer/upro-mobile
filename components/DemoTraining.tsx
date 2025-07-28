@@ -161,7 +161,8 @@ const DemoTraining = ({
           <TouchableOpacity
             className="bg-green-500 py-4 rounded-lg items-center"
             onPress={() => {
-              console.log("Start daily training");
+              // console.log("Start daily training");
+              setStart(true);
             }}
           >
             <Text className="text-white font-semibold text-lg">

@@ -19,7 +19,9 @@ const Training = ({
           Live xp collected
         </InfoText>
       </View>
+
       <Preview feedback={training?.title ?? null} />
+      
       <View className="mt-2 px-5 flex flex-row justify-center w-full items-center ">
         <View className="w-1/2    ">
           <Button

@@ -35,14 +35,17 @@ export default function TrainingsScreen() {
   // section definitions
   const sections = [
     {
+      id: "warm-up",
       title: "Warm Up",
       data: trainings?.filter((t) => t.duration_minutes < 15) || [],
     },
     {
+      id: "training",
       title: "15 mins",
       data: trainings?.filter((t) => t.duration_minutes === 15) || [],
     },
     {
+      id: "drill",
       title: "Drill",
       data: trainings?.filter((t) => t.duration_minutes > 15) || [],
     },
@@ -100,7 +103,7 @@ export default function TrainingsScreen() {
               {section.data.length > 0 && (
                 <TouchableOpacity
                   onPress={() => {
-                    router.push("/trainings/view-more");
+                    router.push(`/trainings/view-more?moreId=${section.id}`);
                   }}
                 >
                   <Text className="text-blue-500">View More</Text>

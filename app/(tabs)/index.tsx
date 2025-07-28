@@ -1,37 +1,116 @@
 import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
+  Alert,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import AuthScreen from "@/components/AuthScreen";
+
 import { useAuth } from "@/contexts/AuthContext";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTheme } from "@react-navigation/native";
 
+// 3D Avatar Component using the actual 3D model viewer
+const Avatar3D = ({ profileName }: { profileName?: string }) => {
+  const { colors } = useTheme();
+
+  return (
+    <View className="items-center mb-8">
+      {/* Temporarily disabled 3D model to fix crashes */}
+      <View
+        className="w-48 h-64 rounded-3xl mb-4 items-center justify-center"
+        style={{
+          backgroundColor: colors.card,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.2,
+          shadowRadius: 16,
+          elevation: 10,
+        }}
+      >
+        <MaterialCommunityIcons name="soccer" size={80} color="#16a34a" />
+        <Text className="text-sm text-gray-500 mt-2 font-semibold">
+          Goalkeeper Model
+        </Text>
+      </View>
+
+      {/* Player Name Below Avatar */}
+      <View className="items-center mb-4">
+        <Text className="text-lg font-bold" style={{ color: colors.text }}>
+          {profileName || "Player"}
+        </Text>
+        <View className="mt-2 px-3 py-1 bg-green-100 rounded-full">
+          <Text className="text-green-700 text-xs font-medium">
+            Goalkeeper Model
+          </Text>
+        </View>
+      </View>
+
+      {/* Action Buttons Below Avatar */}
+      <View className="flex-row gap-4">
+        <TouchableOpacity
+          className="bg-green-600 px-6 py-3 rounded-2xl flex-row items-center"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.2,
+            shadowRadius: 8,
+            elevation: 5,
+          }}
+          onPress={() => {
+            // TODO: Navigate to avatar customization
+            Alert.alert(
+              "Coming Soon",
+              "Avatar customization will be available soon!"
+            );
+          }}
+        >
+          <MaterialCommunityIcons name="palette" size={18} color="white" />
+          <Text className="text-white font-bold ml-2">Customize</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="bg-blue-600 px-6 py-3 rounded-2xl flex-row items-center"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.2,
+            shadowRadius: 8,
+            elevation: 5,
+          }}
+          onPress={() => {
+            // TODO: Share avatar functionality
+            Alert.alert(
+              "Coming Soon",
+              "Avatar sharing will be available soon!"
+            );
+          }}
+        >
+          <MaterialCommunityIcons name="share" size={18} color="white" />
+          <Text className="text-white font-bold ml-2">Share</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
 export default function HomeScreen() {
-  const { user, account, loading, signOut, currentProfile } = useAuth();
+  const { user, account, loading, currentProfile } = useAuth();
   const router = useRouter();
   const { colors } = useTheme();
 
-  // React.useEffect(() => {
-  //   signOut()
-  //     .then(() => {
-  //       console.log("User signed out successfully.");
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error signing out:", error);
-  //     });
-  // }, []);
-
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+      <View
+        className="flex-1 justify-center items-center"
+        style={{ backgroundColor: colors.background }}
+      >
+        <ActivityIndicator size="large" color="#16a34a" />
         <Text className="mt-4 text-gray-600">Loading...</Text>
       </View>
     );
@@ -43,7 +122,10 @@ export default function HomeScreen() {
 
   if (!account) {
     return (
-      <View className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
+      <View
+        className="flex-1 justify-center items-center"
+        style={{ backgroundColor: colors.background }}
+      >
         <Text className="text-lg">No account found. Please log in again.</Text>
       </View>
     );
@@ -59,126 +141,212 @@ export default function HomeScreen() {
     return gold.toFixed(2);
   };
 
+  const StatCard = ({
+    icon,
+    value,
+    label,
+    iconColor = "#16a34a",
+    backgroundColor = "#f0fdf4",
+  }: {
+    icon: string;
+    value: string | number;
+    label: string;
+    iconColor?: string;
+    backgroundColor?: string;
+  }) => (
+    <View
+      className="flex-1 mx-1 mb-4 rounded-2xl p-4 h-24 justify-between"
+      style={{
+        backgroundColor,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 5,
+      }}
+    >
+      <View className="flex-row justify-between items-start">
+        <MaterialCommunityIcons
+          name={icon as any}
+          size={24}
+          color={iconColor}
+        />
+      </View>
+      <View>
+        <Text className="text-2xl font-bold" style={{ color: colors.text }}>
+          {value}
+        </Text>
+        <Text className="text-sm text-gray-600 font-medium">{label}</Text>
+      </View>
+    </View>
+  );
+
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
-      <ScrollView>
-        {/* Top Header Section */}
-        <View className="px-6 pt-4 pb-6">
-          <View className="items-center">
-            <Text className="text-2xl font-bold mb-1" style={{ color: colors.text }}>
-              {currentProfile?.name}
+    <SafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: colors.background }}
+    >
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header Section */}
+        <View className="px-6 pt-6 pb-4">
+          <View className="items-center mb-6">
+            <Text className="text-sm text-gray-500 font-medium">
+              Welcome back,
             </Text>
-            <Text className="text-base text-gray-600">
-              {currentProfile?.playing_position || "Player"}
+            <Text className="text-2xl font-bold" style={{ color: colors.text }}>
+              {currentProfile?.name || "Player"}
+            </Text>
+            <Text className="text-base text-gray-600 mt-1">
+              {currentProfile?.playing_position || "Soccer Player"}
             </Text>
           </View>
         </View>
 
-        {/* Avatar and Action Buttons Section */}
-        <View className="items-center mb-8">
-          {/* Avatar Placeholder */}
-          <View className="w-24 h-32 items-center mb-6">
-            {/* Head */}
-            <View className="w-16 h-16 bg-gray-300 rounded-full mb-2" />
-            {/* Body */}
-            <View className="w-12 h-12 bg-gray-300 rounded-t-full" />
-          </View>
+        {/* 3D Avatar Section */}
+        <Avatar3D profileName={currentProfile?.name} />
 
-          {/* Action Buttons */}
-          <View className="flex-row gap-4">
-            <TouchableOpacity className="bg-blue-500 px-6 py-3 rounded-lg shadow-sm">
-              <Text className="text-white font-bold">edit avatar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-blue-500 px-6 py-3 rounded-lg shadow-sm">
-              <Text className="text-white font-bold">share</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Daily Training Button */}
-        <View className="px-6 mb-6">
-          <TouchableOpacity
-            className="bg-green-500 py-4 rounded-lg items-center shadow-sm"
-            onPress={() => router.push("/daily")}
+        {/* Player Level Card */}
+        <View className="px-6 mb-8">
+          <View
+            className="rounded-3xl p-6"
+            style={{
+              backgroundColor: colors.card,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.1,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
           >
-            <Text className="text-white font-bold text-lg">Daily Training</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Statistics Cards Grid */}
-        <View className="px-6">
-          <View className="flex-row flex-wrap justify-between">
-            {/* Card 1 - XP */}
-            <View className="w-[48%] bg-gray-800 rounded-lg p-4 mb-4">
-              <View className="flex-row items-center mb-2">
-                <MaterialCommunityIcons name="flag" size={16} color="#10B981" />
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1">
+                <Text
+                  className="text-lg font-bold mb-1"
+                  style={{ color: colors.text }}
+                >
+                  Level{" "}
+                  {Math.floor((currentProfile?.experience_total || 0) / 1000) +
+                    1}{" "}
+                  Player
+                </Text>
+                <View className="flex-row items-center">
+                  <View className="bg-green-100 px-3 py-1 rounded-full">
+                    <Text className="text-green-700 text-sm font-semibold">
+                      {currentProfile?.subscription_type === 1
+                        ? "Free Plan"
+                        : "Premium Plan"}
+                    </Text>
+                  </View>
+                </View>
               </View>
-              <Text className="text-white text-2xl font-bold mb-1">
-                {formatXP(currentProfile?.experience_total || 0)}
-              </Text>
-              <Text className="text-white text-sm">Experience Points</Text>
-            </View>
-
-            {/* Card 2 - UPRO Gold */}
-            <View className="w-[48%] bg-gray-800 rounded-lg p-4 mb-4">
-              <View className="flex-row items-center mb-2">
-                <MaterialCommunityIcons
-                  name="crown"
-                  size={16}
-                  color="#8B5CF6"
-                />
+              <View className="items-end">
+                <Text className="text-sm text-gray-500">XP to Next Level</Text>
+                <Text className="text-xl font-bold text-green-600">
+                  {1000 - ((currentProfile?.experience_total || 0) % 1000)}
+                </Text>
               </View>
-              <Text className="text-white text-2xl font-bold mb-1">
-                {formatUPROGold(currentProfile?.upro_gold || 0)}
-              </Text>
-              <Text className="text-white text-sm">UPRO Gold</Text>
-            </View>
-
-            {/* Card 3 - Age Group */}
-            <View className="w-[48%] bg-gray-800 rounded-lg p-4 mb-4">
-              <View className="flex-row items-center mb-2">
-                <MaterialCommunityIcons
-                  name="clock"
-                  size={16}
-                  color="#FFFFFF"
-                />
-              </View>
-              <Text className="text-white text-2xl font-bold mb-1">
-                {currentProfile?.age_group || 0}
-              </Text>
-              <Text className="text-white text-sm">Age Group</Text>
-            </View>
-
-            {/* Card 4 - Weight */}
-            <View className="w-[48%] bg-gray-800 rounded-lg p-4 mb-4">
-              <View className="flex-row items-center mb-2">
-                <MaterialCommunityIcons
-                  name="circle"
-                  size={16}
-                  color="#10B981"
-                />
-              </View>
-              <Text className="text-white text-2xl font-bold mb-1">
-                {currentProfile?.weight || 0}
-              </Text>
-              <Text className="text-white text-sm">Weight (kg)</Text>
-            </View>
-
-            {/* Card 5 - Height */}
-            <View className="w-[48%] bg-gray-800 rounded-lg p-4 mb-4">
-              <View className="flex-row items-center mb-2">
-                <MaterialCommunityIcons
-                  name="lightning-bolt"
-                  size={16}
-                  color="#10B981"
-                />
-              </View>
-              <Text className="text-white text-2xl font-bold mb-1">
-                {currentProfile?.height || 0}
-              </Text>
-              <Text className="text-white text-sm">Height (cm)</Text>
             </View>
           </View>
+        </View>
+
+        {/* Statistics Grid */}
+        <View className="px-6 mb-8">
+          <Text
+            className="text-xl font-bold mb-4"
+            style={{ color: colors.text }}
+          >
+            Your Stats
+          </Text>
+
+          {/* First Row */}
+          <View className="flex-row">
+            <StatCard
+              icon="flag-checkered"
+              value={formatXP(currentProfile?.experience_total || 0)}
+              label="Experience Points"
+              iconColor="#16a34a"
+              backgroundColor="#f0fdf4"
+            />
+            <StatCard
+              icon="diamond-stone"
+              value={formatUPROGold(currentProfile?.upro_gold || 0)}
+              label="UPRO Gold"
+              iconColor="#f59e0b"
+              backgroundColor="#fffbeb"
+            />
+          </View>
+
+          {/* Second Row */}
+          <View className="flex-row">
+            <StatCard
+              icon="calendar"
+              value={currentProfile?.age_group || 0}
+              label="Age"
+              iconColor="#3b82f6"
+              backgroundColor="#eff6ff"
+            />
+            <StatCard
+              icon="weight-kilogram"
+              value={
+                currentProfile?.weight ? `${currentProfile.weight} kg` : "N/A"
+              }
+              label="Weight"
+              iconColor="#8b5cf6"
+              backgroundColor="#f5f3ff"
+            />
+          </View>
+
+          {/* Third Row */}
+          <View className="flex-row">
+            <StatCard
+              icon="human-male-height"
+              value={
+                currentProfile?.height ? `${currentProfile.height} cm` : "N/A"
+              }
+              label="Height"
+              iconColor="#ef4444"
+              backgroundColor="#fef2f2"
+            />
+            <StatCard
+              icon="soccer"
+              value={
+                (currentProfile?.dominant_foot as any) === true ||
+                currentProfile?.dominant_foot === "true"
+                  ? "Right"
+                  : (currentProfile?.dominant_foot as any) === false ||
+                      currentProfile?.dominant_foot === "false"
+                    ? "Left"
+                    : "N/A"
+              }
+              label="Dominant Foot"
+              iconColor="#10b981"
+              backgroundColor="#f0fdfa"
+            />
+          </View>
+        </View>
+
+        {/* Daily Training CTA */}
+        <View className="px-6 mb-12">
+          <TouchableOpacity
+            className="rounded-3xl p-8 items-center"
+            style={{
+              backgroundColor: "#16a34a",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.2,
+              shadowRadius: 16,
+              elevation: 10,
+            }}
+            onPress={() => router.push("/pages/daily")}
+          >
+            <MaterialCommunityIcons name="fire" size={48} color="white" />
+            <Text className="text-white text-2xl font-bold mt-4 mb-2">
+              Daily Training
+            </Text>
+            <Text className="text-green-100 text-center text-base">
+              Keep your streak going! Complete today&apos;s training session.
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

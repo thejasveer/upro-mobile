@@ -26,13 +26,13 @@ export default function TrainingsScreen() {
   const { trainings, getTrainings } = useTrainings();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"Training" | "Exercise">(
-    "Training",
+    "Training"
   );
   const { colors, dark } = useTheme();
 
   useEffect(() => {
     getTrainings();
-  }, []);
+  }, [getTrainings]);
 
   // section definitions
   const sections = [
@@ -79,7 +79,10 @@ export default function TrainingsScreen() {
           headerBackground: () => <View className="bg-transparent" />,
         }}
       />
-      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
+      <SafeAreaView
+        className="flex-1"
+        style={{ backgroundColor: colors.background }}
+      >
         <View className="p-5">
           {/* Tabs */}
           <View className="flex-row mb-4">
@@ -87,8 +90,11 @@ export default function TrainingsScreen() {
               <TouchableOpacity
                 key={tab}
                 onPress={() => setActiveTab(tab as any)}
-                className='flex-1 py-2 mr-2 rounded-md items-center'
-                style={{ backgroundColor: activeTab === tab ? colors.primary : '#e5e7eb' }}
+                className="flex-1 py-2 mr-2 rounded-md items-center"
+                style={{
+                  backgroundColor:
+                    activeTab === tab ? colors.primary : "#e5e7eb",
+                }}
               >
                 <Text
                   className={`${activeTab === tab ? "text-white" : "text-black"}`}
@@ -134,18 +140,22 @@ export default function TrainingsScreen() {
               {/* Options - horizontal linear with colorful backgrounds */}
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View className="flex-row">
-                  {section.data
-                    .filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()))
-                    .length === 0 && (
-                      <View className="py-8 px-4">
-                        <Text className="text-gray-500">
-                          No trainings available.
-                        </Text>
-                      </View>
-                    )}
+                  {section.data.filter((item) =>
+                    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).length === 0 && (
+                    <View className="py-8 px-4">
+                      <Text className="text-gray-500">
+                        No trainings available.
+                      </Text>
+                    </View>
+                  )}
 
                   {section.data
-                    .filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((item) =>
+                      item.title
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase())
+                    )
                     .map((item, idx) => {
                       const bgClass = optionColors[idx % optionColors.length];
 

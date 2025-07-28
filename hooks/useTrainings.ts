@@ -5,6 +5,7 @@ import { useState } from "react";
 export const useTrainings = () => {
   const [trainings, setTrainings] = useState<TrainingInterface[] | null>([]);
   const [training, setTraining] = useState<TrainingInterface | null>(null);
+  const [trainingExercises, setTrainingExercises] = useState<any[] | null>([]);
   const [count, setcount] = useState<number>(0);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -16,10 +17,12 @@ export const useTrainings = () => {
 
     setTrainings((prev) => training_sessions);
   };
+
   const findIndex = (id: number) => {
     const i: any = trainings?.findIndex((training) => training.id === id);
     setCurrentIndex(i);
   };
+
   const getTraining = async (id: number) => {
     let { data: training_session, error } = await supabase
       .from("training_sessions")
@@ -28,6 +31,35 @@ export const useTrainings = () => {
 
     setTraining(training_session && training_session[0]);
   };
+
+  const getTrainingExercises = async (trainingSessionId: number) => {
+    let { data: exercises, error } = await supabase
+      .from("training_sessions_and_exercises")
+      .select(
+        `
+        exercises (
+          id,
+          title,
+          description,
+          experience_reward,
+          difficulty,
+          duration
+        )
+      `
+      )
+      .eq("training_session_id", trainingSessionId);
+
+    if (error) {
+      console.error("Error fetching training exercises:", error);
+      setTrainingExercises([]);
+      return;
+    }
+
+    // Extract exercises from the nested structure
+    const exerciseList = exercises?.map((item: any) => item.exercises) || [];
+    setTrainingExercises(exerciseList);
+  };
+
   return {
     trainings,
     getTraining,
@@ -36,5 +68,7 @@ export const useTrainings = () => {
     count,
     findIndex,
     currentIndex,
+    trainingExercises,
+    getTrainingExercises,
   };
 };

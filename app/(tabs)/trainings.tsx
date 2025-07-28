@@ -12,6 +12,7 @@ import {
 } from "react-native";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { ExerciseInterface, useExercises } from "@/hooks/useExercises";
 import { useTrainings } from "@/hooks/useTrainings";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTheme } from "@react-navigation/native";
@@ -29,6 +30,7 @@ export interface TrainingInterface {
 export default function TrainingsScreen() {
   const router = useRouter();
   const { trainings, getTrainings } = useTrainings();
+  const { exercises, getExercises } = useExercises();
   const { currentProfile } = useAuth();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"Training" | "Exercise">(
@@ -40,43 +42,52 @@ export default function TrainingsScreen() {
   const isPremiumUser = currentProfile?.subscription_type === 2;
 
   useEffect(() => {
-    const loadTrainings = async () => {
+    const loadData = async () => {
       setIsLoading(true);
-      await getTrainings();
+      await Promise.all([getTrainings(), getExercises()]);
       setIsLoading(false);
     };
-    loadTrainings();
+    loadData();
   }, []); // Empty dependency array - only run once on mount
 
-  // Get exercises (existing content with horizontal cards)
+  // Get exercises (actual exercises grouped by difficulty)
   const getExerciseContent = () => {
     const sections = [
       {
-        id: "warm-up",
-        title: "Warm Up",
-        subtitle: "Get ready to train",
+        id: "easy",
+        title: "Beginner",
+        subtitle: "Perfect for starting out",
+        icon: "leaf",
+        iconColor: "#16a34a",
+        gradientColors: ["#f0fdf4", "#16a34a"],
+        data:
+          exercises?.filter(
+            (e: ExerciseInterface) => e.difficulty === "easy"
+          ) || [],
+      },
+      {
+        id: "medium",
+        title: "Intermediate",
+        subtitle: "Build your skills",
         icon: "fire",
         iconColor: "#f59e0b",
-        gradientColors: ["#fef3c7", "#fbbf24"],
-        data: trainings?.filter((t) => t.duration < 15) || [],
+        gradientColors: ["#fef3c7", "#f59e0b"],
+        data:
+          exercises?.filter(
+            (e: ExerciseInterface) => e.difficulty === "medium"
+          ) || [],
       },
       {
-        id: "training",
-        title: "15 mins",
-        subtitle: "Quick sessions",
-        icon: "clock-fast",
-        iconColor: "#3b82f6",
-        gradientColors: ["#dbeafe", "#60a5fa"],
-        data: trainings?.filter((t) => t.duration === 15) || [],
-      },
-      {
-        id: "drill",
-        title: "Drill",
-        subtitle: "Intensive training",
-        icon: "target",
+        id: "hard",
+        title: "Advanced",
+        subtitle: "Master the techniques",
+        icon: "lightning-bolt",
         iconColor: "#ef4444",
-        gradientColors: ["#fee2e2", "#f87171"],
-        data: trainings?.filter((t) => t.duration > 15) || [],
+        gradientColors: ["#fee2e2", "#ef4444"],
+        data:
+          exercises?.filter(
+            (e: ExerciseInterface) => e.difficulty === "hard"
+          ) || [],
       },
     ];
     return sections;
@@ -179,16 +190,16 @@ export default function TrainingsScreen() {
     </TouchableOpacity>
   );
 
-  // Horizontal Exercise Card Component
+  // Horizontal Exercise Card Component (for individual exercises)
   const ExerciseCard = ({
     item,
     style,
   }: {
-    item: TrainingInterface;
+    item: ExerciseInterface;
     style: any;
   }) => (
     <TouchableOpacity
-      onPress={() => router.push(`/trainings/single/${item.id}`)}
+      onPress={() => router.push(`/trainings/single/${item.id}?type=exercise`)}
       className="w-48 mr-4 rounded-3xl p-6"
       style={{
         backgroundColor: style.backgroundColor,
@@ -234,19 +245,38 @@ export default function TrainingsScreen() {
         {item.description}
       </Text>
 
-      <View className="flex-row items-center">
-        <MaterialCommunityIcons name="star" size={16} color={style.iconColor} />
-        <Text
-          className="text-sm font-semibold ml-1"
-          style={{ color: style.textColor }}
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center">
+          <MaterialCommunityIcons
+            name="star"
+            size={16}
+            color={style.iconColor}
+          />
+          <Text
+            className="text-sm font-semibold ml-1"
+            style={{ color: style.textColor }}
+          >
+            {item.experience_reward} XP
+          </Text>
+        </View>
+
+        {/* Difficulty Badge */}
+        <View
+          className="px-2 py-1 rounded-full"
+          style={{ backgroundColor: `${style.iconColor}20` }}
         >
-          {item.experience_reward} XP
-        </Text>
+          <Text
+            className="text-xs font-bold uppercase"
+            style={{ color: style.iconColor }}
+          >
+            {item.difficulty}
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
 
-  // Timeline Training Card Component
+  // Timeline Training Card Component (for training sessions)
   const TimelineTrainingCard = ({
     item,
     index,
@@ -427,7 +457,9 @@ export default function TrainingsScreen() {
         {section.data.length > 0 && (
           <TouchableOpacity
             onPress={() => {
-              router.push(`/trainings/view-more?moreId=${section.id}`);
+              router.push(
+                `/trainings/view-more?moreId=${section.id}&type=exercise`
+              );
             }}
             className="flex-row items-center bg-blue-50 px-3 py-2 rounded-xl"
           >
@@ -452,7 +484,7 @@ export default function TrainingsScreen() {
         style={{ backgroundColor: colors.background }}
       >
         <ActivityIndicator size="large" color="#16a34a" />
-        <Text className="mt-4 text-gray-600">Loading trainings...</Text>
+        <Text className="mt-4 text-gray-600">Loading content...</Text>
       </SafeAreaView>
     );
   }
@@ -484,11 +516,13 @@ export default function TrainingsScreen() {
             className="text-3xl font-bold mb-2"
             style={{ color: colors.text }}
           >
-            {activeTab === "Exercise" ? "Exercise Hub" : "Training Timeline"}
+            {activeTab === "Exercise"
+              ? "Exercise Library"
+              : "Training Timeline"}
           </Text>
           <Text className="text-gray-500 text-base mb-6">
             {activeTab === "Exercise"
-              ? "Choose your exercise session and improve your skills"
+              ? "Individual exercises to perfect your skills"
               : "Track your training journey through time"}
           </Text>
 
@@ -576,10 +610,11 @@ export default function TrainingsScreen() {
         {/* Content */}
         <ScrollView className="px-6" showsVerticalScrollIndicator={false}>
           {activeTab === "Exercise" ? (
-            // Exercise Tab - Horizontal Card Sections
+            // Exercise Tab - Horizontal Card Sections (Individual Exercises)
             exerciseSections.map((section) => {
-              const filteredData = section.data.filter((item) =>
-                item.title.toLowerCase().includes(searchQuery.toLowerCase())
+              const filteredData = section.data.filter(
+                (item: ExerciseInterface) =>
+                  item.title.toLowerCase().includes(searchQuery.toLowerCase())
               );
 
               return (
@@ -614,16 +649,19 @@ export default function TrainingsScreen() {
                       showsHorizontalScrollIndicator={false}
                     >
                       <View className="flex-row">
-                        {filteredData.map((item, idx) => {
-                          const cardStyle = cardStyles[idx % cardStyles.length];
-                          return (
-                            <ExerciseCard
-                              key={item.id}
-                              item={item}
-                              style={cardStyle}
-                            />
-                          );
-                        })}
+                        {filteredData.map(
+                          (item: ExerciseInterface, idx: number) => {
+                            const cardStyle =
+                              cardStyles[idx % cardStyles.length];
+                            return (
+                              <ExerciseCard
+                                key={item.id}
+                                item={item}
+                                style={cardStyle}
+                              />
+                            );
+                          }
+                        )}
                       </View>
                     </ScrollView>
                   )}
@@ -631,7 +669,7 @@ export default function TrainingsScreen() {
               );
             })
           ) : (
-            // Training Tab - Vertical Timeline
+            // Training Tab - Vertical Timeline (Training Sessions)
             <View className="mb-8">
               {timelineData.length === 0 ? (
                 <View

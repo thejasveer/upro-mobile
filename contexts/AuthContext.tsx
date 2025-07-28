@@ -162,20 +162,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      setProfiles(data ?? []);
-      if (data?.[0]) {
-        switchProfile(String(data[0].id)); // Convert number to string
+      const profiles = data ?? [];
+      setProfiles(profiles);
+
+      // Only switch to first profile if we have profiles and no current profile is set
+      if (profiles.length > 0 && !currentProfile) {
+        const firstProfile = profiles[0];
+        setCurrentProfile(firstProfile);
+      } else if (profiles.length === 0) {
+        console.log("No profiles found for account");
+        setCurrentProfile(null);
       }
     }
   };
 
   const switchProfile = (profileId: string) => {
-    console.log(profiles);
-    const profile = profiles.find((p) => String(p.id) === profileId); // Handle both string and number IDs
+    const profile = profiles.find((p) => String(p.id) === profileId);
     if (profile) {
       setCurrentProfile(profile);
     } else {
-      console.warn(`Profile with ID ${profileId} not found`);
+      console.warn(
+        `Profile with ID ${profileId} not found in available profiles:`,
+        profiles.map((p) => p.id)
+      );
     }
   };
 
